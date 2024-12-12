@@ -3,7 +3,7 @@
 # Variables to replace with your actual values
 RESOURCE_GROUP="rachelai-laravel-group"
 APP_SERVICE_NAME="rachelai-laravel"
-ENV_FILE=".env"
+ENV_FILE=".env.prod"
 
 # Check if .env file exists
 if [ ! -f "$ENV_FILE" ]; then
