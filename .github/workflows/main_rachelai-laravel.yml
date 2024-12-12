@@ -13,23 +13,74 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
-    steps:
-      - uses: actions/checkout@v4
+    env:
+      APP_ENV: production
+      APP_KEY: ${{ secrets.APP_KEY }}
 
+      DB_CONNECTION: pgsql
+      DB_HOST: ${{ secrets.PGSQL_DATABASE }}
+      DB_PORT: ${{ secrets.DB_PORT }}
+      DB_DATABASE: ${{ secrets.DB_DATABASE }}
+      DB_USERNAME: ${{ secrets.DB_USERNAME }}
+      DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+
+    steps:
+      # Step 1: Checkout the code
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # Step 2: Setup PHP
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: '8.3'
+          php-version: '8.3'  # Specify your PHP version
+          extensions: mbstring, bcmath, pgsql, pdo_pgsql
+          ini-values: |
+            memory_limit=512M
+            upload_max_filesize=50M
+            post_max_size=50M
+          coverage: none
 
+      # Step 3-1: Check if composer exists
       - name: Check if composer.json exists
         id: check_files
         uses: andstor/file-existence-action@v1
         with:
           files: 'composer.json'
 
+      # Step 3-2: Install composer dependencies
+      - name: Cache Composer dependencies
+        uses: actions/cache@v3
+        with:
+          path: vendor
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+          restore-keys: ${{ runner.os }}-composer-
+
+      # Step 3-3: Install composer dependencies
       - name: Run composer install if composer.json exists
         if: steps.check_files.outputs.files_exists == 'true'
-        run: composer validate --no-check-publish && composer install --prefer-dist --no-progress --optimize-autoloader
+        run: |
+          composer validate --no-check-publish && 
+          composer install --prefer-dist --no-progress --no-suggest --optimize-autoloader
+
+      # Step 4: Generate application key
+      - name: Generate application key
+        run: php artisan key:generate
+        env:
+          APP_KEY: ${{ secrets.APP_KEY }}
+
+      # Step 5: Wait for PostgreSQL to be ready
+      - name: Wait for PostgreSQL to be ready
+        run: |
+          for i in {1..10}; do
+            pg_isready -h localhost -p 5432 -U ${{ secrets.PGSQL_USERNAME }} && break
+            echo "Waiting for PostgreSQL..."
+            sleep 5
+          done
+
+      # Step 6: Run tests (optional)
+      #- name: Run tests
+      #  run: php artisan test --no-interaction --verbosity=normal
 
       - name: Zip artifact for deployment
         run: zip release.zip ./* -r
@@ -39,11 +90,6 @@ jobs:
         with:
           name: php-app
           path: release.zip
-
-      - name: Set storage permissions
-        run: |
-          chmod -R 775 storage
-          chmod -R 775 bootstrap/cache
 
   deploy:
     runs-on: ubuntu-latest
@@ -60,7 +106,7 @@ jobs:
 
       - name: Unzip artifact for deployment
         run: unzip release.zip
-      
+
       - name: 'Deploy to Azure Web App'
         uses: azure/webapps-deploy@v3
         id: deploy-to-webapp
