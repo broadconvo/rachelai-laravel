@@ -74,4 +74,9 @@ do
   fi
 done < "$ENV_FILE"
 
+az webapp restart \
+  --name "$APP_SERVICE_NAME" \
+  --resource-group "$RESOURCE_GROUP"
+echo "$APP_SERVICE_NAME restart complete."
+
 echo "Environment variables update complete."
