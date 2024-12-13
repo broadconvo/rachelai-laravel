@@ -48,7 +48,7 @@ jobs:
         with:
           files: 'composer.json'
 
-      # Step 3-2: Install composer dependencies
+      # Step 3-2: cache composer dependencies
       - name: Cache Composer dependencies
         uses: actions/cache@v3
         with:
@@ -63,11 +63,11 @@ jobs:
           composer validate --no-check-publish && 
           composer install --prefer-dist --no-progress --no-suggest --optimize-autoloader
 
-      # Step 4: Generate application key
-      - name: Generate application key
-        run: php artisan key:generate
-        env:
-          APP_KEY: ${{ secrets.APP_KEY }}
+      # Step 4: Use client secret to create Google Client Secret File
+      - name: Create Google Client Secret File
+        run: |
+          mkdir -p storage/app/google-api
+          echo "${{ secrets.GOOGLE_CLIENT_SECRET }}" > storage/app/google-api/client_secret.json
 
       # Step 5: Wait for PostgreSQL to be ready
       - name: Wait for PostgreSQL to be ready
