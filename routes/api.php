@@ -11,7 +11,7 @@ Route::middleware(['auth:sanctum'])->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Auth::loginUsingId(1);
+//Auth::loginUsingId(1);
 
 
 // redirect to the provider

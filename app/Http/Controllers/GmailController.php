@@ -3,20 +3,18 @@
 namespace App\Http\Controllers;
 
 use App\Agents\EmailAgent;
-use App\Agents\TranslatorAgent;
 use App\Models\User;
 use App\Services\GmailService;
-use Google\Service\Gmail\WatchRequest;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Http;
 use Laravel\Socialite\Facades\Socialite;
 use TomShaw\GoogleApi\GoogleClient;
-use function PHPUnit\Framework\isEmpty;
+use TomShaw\GoogleApi\Models\GoogleToken;
 
 class GmailController extends Controller
 {
     public function googleRedirect()
     {
+        $phoneNumbers = request()->query('phoneNumbers');
+
         $scopes = array_merge_recursive(
             config('google-api.service_scopes'),
             [
@@ -25,61 +23,55 @@ class GmailController extends Controller
                 'openid'
             ]
         );
+        $state = base64_encode($phoneNumbers);
 
-        return Socialite::with('google')
-            ->with(['access_type' => 'offline', 'prompt' => 'consent select_account'])
+        $targetUrl = Socialite::with('google')
+            ->with(['access_type' => 'offline', 'prompt' => 'consent select_account', 'state'=>$state])
             ->scopes($scopes)
             ->stateless()
             ->redirect()
             ->getTargetUrl();
+        return redirect($targetUrl);
     }
 
     public function index(GoogleClient $client)
     {
-        $user = Socialite::driver('google')->stateless()->user();
+        $phoneNumbers = base64_decode(request('state'));
 
-        /**
-         * array:9 [▼ // app/Http/Controllers/GmailController.php:43
-         * "azp" => "644206466557-ibc8htql0hvmi1egism3cr93hp5o37fl.apps.googleusercontent.com"
-         * "aud" => "644206466557-ibc8htql0hvmi1egism3cr93hp5o37fl.apps.googleusercontent.com"
-         * "sub" => "103994001368389464510"
-         * "scope" => "
-         * https://www.googleapis.com/auth/gmail.compose https://www.googleapis.com/auth/gmail.readonly https://www.googleapis.com/auth/gmail.send https://www.googleapis.c
-         * ▶
-         * "
-         * "exp" => "1734023526"
-         * "expires_in" => "3599"
-         * "email" => "ernandrewgregorio@gmail.com"
-         * "email_verified" => "true"
-         * "access_type" => "offline"
-         * ]
-         */
-        $tokenInfoResponse = Http::get('https://oauth2.googleapis.com/tokeninfo', [
-            'access_token' => $user->token,
-        ]);
+        // Regular expression to extract all numbers and flatten
+        preg_match_all('/\d+/', $phoneNumbers, $phoneMatches);
 
-        $scopes = [];
-        $expiresIn = 0;
-        if ($tokenInfoResponse->ok()) {
-            $expiresIn = $tokenInfoResponse->json()['expires_in']; // Token expiration time
-            $grantedScopes = $tokenInfoResponse->json()['scope']; // Scopes granted by the user
-            $scopes = implode(' ', explode(' ', $grantedScopes)); // Convert to array then concatenate with spaces
-        }
+        // Join numbers into full phone numbers
+        $phoneNumbers = array_chunk($phoneMatches[0], 2);
+        $cleanedNumbers = implode(';', array_map(fn($pair) => implode('', $pair), $phoneNumbers));
 
-        Auth::login(User::find(1));
+        $oauthUser = Socialite::driver('google')->stateless()->user();
 
-        // updates the google_tokens table with the new token
-        $client->setAccessToken([
-            'access_token' => $user->token,
-            'expires_in' => $expiresIn,
-            'refresh_token' => $user->refreshToken,
-            'scope' => $scopes,
-            'token_type' => 'Bearer',
-            'created' => now()->timestamp,
-        ]);
+        $user = User::updateOrCreate(
+            ['email' => $oauthUser->email], // Search criteria
+            [
+                'name' => $oauthUser->name,
+                'phone_number' => $cleanedNumbers,
+                'password' => bcrypt('password'),
+            ]
+        );
+
+        $googleToken = GoogleToken::updateOrCreate(
+            ['user_id' => $user->id],
+            [
+                'user_id' => $user->id,
+                'access_token' => $oauthUser->token,
+                'refresh_token' => $oauthUser->refreshToken,
+                'expires_in' => 30 * 24 * 60 * 60, // 1 month in seconds,
+                'scope' => request('scope'),
+                'token_type' => 'Bearer',
+                'created' => now()->timestamp,
+            ]
+        );
+
         return response()->json([
-            'token' => $user->token,
-            'refreshToken' => $user->refreshToken,
+            'token' => $googleToken->access_token,
+            'refreshToken' => $googleToken->refresh_token,
         ]);
     }
 
