@@ -67,7 +67,7 @@ jobs:
       - name: Create Google Client Secret File
         run: |
           mkdir -p storage/app/google-api
-          echo "${{ secrets.GOOGLE_CLIENT_SECRET }}" > storage/app/google-api/client_secret.json
+          echo "${{ secrets.GOOGLE_CLIENT_SECRET }}" | tee storage/app/google-api/client_secret.json > /dev/null
 
       # Step 5: Wait for PostgreSQL to be ready
       - name: Wait for PostgreSQL to be ready
