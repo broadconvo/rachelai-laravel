@@ -23,4 +23,8 @@ Route::get('/auth/callback', [GmailController::class, 'index']);
 // process emails
 Route::get('/emails', [GmailController::class, 'getEmails']);
 
+// watch for new emails
+Route::get('/emails/watch', [GmailController::class, 'watchGmail']);
+
+
 Route::post('/email', [EmailAgentController::class, 'create']);

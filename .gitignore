@@ -19,3 +19,4 @@ Homestead.json
 .phpunit.result.cache
 .idea
 .vscode
+.DS_Store

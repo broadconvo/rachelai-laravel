@@ -2,12 +2,16 @@
 
 namespace App\Http\Controllers;
 
+use App\Agents\EmailAgent;
+use App\Agents\TranslatorAgent;
 use App\Models\User;
 use App\Services\GmailService;
+use Google\Service\Gmail\WatchRequest;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
 use Laravel\Socialite\Facades\Socialite;
 use TomShaw\GoogleApi\GoogleClient;
+use function PHPUnit\Framework\isEmpty;
 
 class GmailController extends Controller
 {
@@ -59,19 +63,19 @@ class GmailController extends Controller
         if ($tokenInfoResponse->ok()) {
             $expiresIn = $tokenInfoResponse->json()['expires_in']; // Token expiration time
             $grantedScopes = $tokenInfoResponse->json()['scope']; // Scopes granted by the user
-            $scopes = implode(' ',explode(' ', $grantedScopes)); // Convert to array then concatenate with spaces
+            $scopes = implode(' ', explode(' ', $grantedScopes)); // Convert to array then concatenate with spaces
         }
 
         Auth::login(User::find(1));
 
         // updates the google_tokens table with the new token
         $client->setAccessToken([
-            'access_token'=>$user->token,
-            'expires_in'=>$expiresIn,
-            'refresh_token'=>$user->refreshToken,
-            'scope'=>$scopes,
-            'token_type'=>'Bearer',
-            'created'=>now()->timestamp,
+            'access_token' => $user->token,
+            'expires_in' => $expiresIn,
+            'refresh_token' => $user->refreshToken,
+            'scope' => $scopes,
+            'token_type' => 'Bearer',
+            'created' => now()->timestamp,
         ]);
         return response()->json([
             'token' => $user->token,
@@ -86,6 +90,41 @@ class GmailController extends Controller
         // this is done via Tomshaw's GoogleClient
         // We created a custom Gmail Service to handle the Gmail API
         $gmailService = new GmailService(app(GoogleClient::class));
-        return response()->json(['messages' => $gmailService->getUserMessages()]);
+        $messages = $gmailService->getUserMessages();
+
+        if(!count($messages)) {
+            return response()->json(['message' => 'No new messages']);
+        }
+
+        $emailAgent = new EmailAgent();
+
+        $aiResponses = [];
+        foreach ( $messages as $message ) {
+            $result = $emailAgent->handle([
+                'input' => 'Create a draft message using the same language as the provided email.',
+                'body' => $message['body'],
+                'sender' => $message['sender']
+            ]);
+
+            $gmailService->createDraft($message['sender'], $message['id'], $result->content());
+
+            $aiResponses[] = [
+                'id' => $message['id'],
+                'message' => $message['body'],
+                'response' => $result->content(),
+                'to' => $message['sender']
+            ];
+        } // end foreach
+
+
+        return response()->json(['response' =>  $aiResponses]);
+    }
+
+    public function watchGmail()
+    {
+        $gmailService = new GmailService(app(GoogleClient::class));
+        $response = $gmailService->watchGmail();
+
+        return response()->json($response);
     }
 }
