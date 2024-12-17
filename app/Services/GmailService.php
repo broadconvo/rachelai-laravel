@@ -66,4 +66,47 @@ class GmailService
             'sender' => $sender,
         ];
     }
+
+    public function createDraft($to, $threadId, $body, $from = null)
+    {
+        // If $from is not specified, use "me" (the authenticated user)
+        $from = $from ?? 'me';
+
+        // Construct a raw MIME message
+        $rawMessage =
+            "From: $from\r\n" .
+            "To: $to\r\n" .
+            "MIME-Version: 1.0\r\n" .
+            "Content-Type: text/plain; charset=UTF-8\r\n" .
+            "Content-Transfer-Encoding: 7bit\r\n\r\n" .
+            $body;
+
+        // Base64 URL-safe encode the message
+        $encodedMessage = rtrim(strtr(base64_encode($rawMessage), '+/', '-_'), '=');
+
+        // Create a new Gmail Message
+        $message = new Gmail\Message();
+        $message->setRaw($encodedMessage);
+        $message->setThreadId($threadId);
+
+        // Create a new Draft
+        $draft = new Gmail\Draft();
+        $draft->setMessage($message);
+
+        // Save the draft
+        return $this->service->users_drafts->create('me', $draft);
+    }
+
+    public function watchGmail()
+    {
+        // config('google-api.pubsub_topic')
+        $project = 'broadconvo-email';
+        $topic = "projects/{$project}/topics/gmail-watcher";
+        $watchRequest = new WatchRequest([
+            'topicName' => $topic,
+            'labelIds' => ['INBOX'],
+        ]);
+
+        return $this->service->users->watch('me', $watchRequest);
+    }
 }
