@@ -1,11 +1,11 @@
-echo "Upgrade APT (Advanced Package Tool)"
-apt ugrade
+#echo "Upgrade APT (Advanced Package Tool)"
+#apt upgrade
 
 echo "Updating APT (Advanced Package Tool)"
 apt-get update --allow-releaseinfo-change
 
 echo "Install git"
-apt-get install git
+apt-get install -y git
 echo "Install zip unzip"
 apt-get install -y zip unzip
 
