@@ -4,7 +4,21 @@ echo "Shutting down Laravel"
 php /home/site/wwwroot/artisan down --refresh=15 --secret="$APP_SECRET"
 
 echo "Copying google client"
-echo "$GOOGLE_CREDENTIALS" > /home/site/wwwroot/storage/app/google-api/client_secret.json
+# Transform into valid JSON using sed
+fixed_json=$(echo "$GOOGLE_CREDENTIALS" | sed -E '
+    s/([{,])([a-zA-Z0-9_]+):/\1"\2":/g;              # Add quotes to keys
+    s/:([a-zA-Z0-9_@.\/:-]+)/:"\1"/g;               # Add quotes to string values
+    s/:\[([^\]]+)\]/:[\1]/g;                        # Ignore array values for now
+    s/:"\[([^]]+)\]"/:[\1]/g;                       # Handle array syntax
+    s/\[([^\]]+)\]/[ "\1" ]/g;                      # Add quotes to array elements
+    s/,[ ]*\]/]/g;                                  # Clean up trailing commas in arrays
+')
+
+# Write the output to a file
+echo "$fixed_json" > /home/site/wwwroot/storage/app/google-api/client_secret.json
+
+# Output to console
+echo "Fixed JSON written to client_secret.json"
 
 echo "Migrating database"
 #php /home/site/wwwroot/artisan migrate --force
