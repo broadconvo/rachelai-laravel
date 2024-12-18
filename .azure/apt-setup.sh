@@ -27,14 +27,14 @@ fi
 # Check and install Zip/Unzip
 if ! command -v zip &> /dev/null || ! command -v unzip &> /dev/null; then
     echo "Zip or Unzip is not installed. Installing p7zip-full..."
-    sudo apt update && sudo apt install -y p7zip-full
+    apt install -y p7zip-full
 fi
 
 # Replace unzip with a 7z wrapper
 if [ ! -f /usr/bin/unzip.bak ]; then
     echo "Replacing unzip with a p7zip wrapper..."
-    sudo mv /usr/bin/unzip /usr/bin/unzip.bak
-    sudo tee /usr/bin/unzip > /dev/null <<EOF
+    mv /usr/bin/unzip /usr/bin/unzip.bak
+    tee /usr/bin/unzip > /dev/null <<EOF
 #!/bin/bash
 7z x "\$@"
 EOF
