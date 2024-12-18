@@ -7,6 +7,7 @@ echo "- Composer will be installed globally if it is not"
 echo "  already available on the system."
 echo "- After installation, it will handle dependency management"
 echo "  in the specified working directory."
+echo "--------------------------------------------------------"
 
 # Check if Composer is installed
 if ! command -v composer &> /dev/null; then
