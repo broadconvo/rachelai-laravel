@@ -9,6 +9,7 @@ apt-get update --allow-releaseinfo-change
 if ! command -v git &> /dev/null; then
     echo "Git is not installed. Installing Git..."
     apt-get install -y git
+    git config --global --add safe.directory /home/site/wwwroot
 else
     echo "Git is already installed."
 fi
