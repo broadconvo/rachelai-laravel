@@ -30,7 +30,7 @@ fi
 # Run Composer commands to install dependencies
 echo "Running Composer install..."
 export COMPOSER_ALLOW_SUPERUSER=1
-export COMPOSER_PROCESS_TIMEOUT=1200
+export COMPOSER_PROCESS_TIMEOUT=60
 composer install --working-dir=/home/site/wwwroot --no-interaction --no-dev --prefer-dist
 
 echo "--------------------------------------------------------"
