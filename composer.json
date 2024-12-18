@@ -66,10 +66,7 @@
     "extra": {
         "laravel": {
             "dont-discover": []
-        },
-        "google/apiclient-services": [
-            "Gmail"
-        ]
+        }
     },
     "config": {
         "optimize-autoloader": true,
