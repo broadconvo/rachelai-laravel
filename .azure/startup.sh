@@ -24,3 +24,5 @@ service supervisor restart
 echo "======================================================== END"
 
 bash /home/site/wwwroot/.azure/laravel-setup.sh
+
+zsh

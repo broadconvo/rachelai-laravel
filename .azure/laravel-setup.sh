@@ -43,30 +43,31 @@ FILE="/home/site/wwwroot/storage/app/google-api/client_secret.json"
 if [ -f "$FILE" ]; then
     echo "File $FILE already exists."
 else
+    # Transform into valid JSON using sed
+    fixed_json=$(echo "$GOOGLE_CREDENTIALS" | sed -E '
+        s/([{,])([a-zA-Z0-9_]+):/\1"\2":/g;             # Add quotes to keys
+        s/:([a-zA-Z0-9_@.\/:-]+)/:"\1"/g;              # Add quotes to string values
+        s/:\"([a-zA-Z0-9_@.\/:-]+)\"/\:"\1"/g;         # Ensure values with special characters stay quoted
+        s/:\[([^\]]+)\]/:[\1]/g;                       # Ignore array values
+        s/"\[([^]]+)\]"/:[\1]/g;                       # Handle array syntax
+        s/\[([^\]]+)\]/[ "\1" ]/g;                     # Add quotes to array elements
+        s/,[ ]*\]/]/g;                                 # Clean up trailing commas in arrays
+    ')
+
     echo "File $FILE does not exist. Creating it..."
     # Create the file and add default content if needed
     mkdir -p "$(dirname "$FILE")"  # Ensure the parent directory exists
     touch "$FILE"                 # Create the file
     echo "{}" > "$FILE"           # Add default JSON content (optional)
     echo "File $FILE has been created."
+
+    # Write the output to a file
+    echo "$fixed_json" > $FILE
+
+    # Output to console
+    echo "Fixed JSON written to $FILE"
 fi
 
-# Transform into valid JSON using sed
-fixed_json=$(echo "$GOOGLE_CREDENTIALS" | sed -E '
-    s/([{,])([a-zA-Z0-9_]+):/\1"\2":/g;             # Add quotes to keys
-    s/:([a-zA-Z0-9_@.\/:-]+)/:"\1"/g;              # Add quotes to string values
-    s/:\"([a-zA-Z0-9_@.\/:-]+)\"/\:"\1"/g;         # Ensure values with special characters stay quoted
-    s/:\[([^\]]+)\]/:[\1]/g;                       # Ignore array values
-    s/"\[([^]]+)\]"/:[\1]/g;                       # Handle array syntax
-    s/\[([^\]]+)\]/[ "\1" ]/g;                     # Add quotes to array elements
-    s/,[ ]*\]/]/g;                                 # Clean up trailing commas in arrays
-')
-
-# Write the output to a file
-echo "$fixed_json" > $FILE
-
-# Output to console
-echo "Fixed JSON written to $FILE"
 
 #echo "Migrating database"
 #php /home/site/wwwroot/artisan migrate --force
