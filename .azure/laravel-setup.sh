@@ -7,7 +7,7 @@ echo "Copying google client"
 echo "$GOOGLE_CREDENTIALS" > /home/site/wwwroot/storage/app/google-api/client_secret.json
 
 echo "Migrating database"
-php /home/site/wwwroot/artisan migrate --force
+#php /home/site/wwwroot/artisan migrate --force
 
 echo "Clearing cache"
 php /home/site/wwwroot/artisan cache:clear
