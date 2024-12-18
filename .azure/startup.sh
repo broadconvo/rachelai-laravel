@@ -3,8 +3,9 @@
 cp -r .azure/* /home
 rm /home/set-env-vars.sh
 
-bash /home/composer-setup.sh
+bash /zsh-setup.sh
 bash /home/apt-setup.sh
+bash /home/composer-setup.sh
 
 echo "Copying nginx configuration"
 cp /home/default /etc/nginx/sites-enabled/default
