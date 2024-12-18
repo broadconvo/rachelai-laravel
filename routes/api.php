@@ -18,7 +18,7 @@ Route::middleware(['auth:sanctum'])->get('/user', function (Request $request) {
 Route::get('/auth/redirect', [GmailController::class, 'googleRedirect']);
 
 // callback from the provider
-Route::get('/auth/callback', [GmailController::class, 'index']);
+Route::get('/auth/callback', [GmailController::class, 'index'])->name('google.oauth.callback');
 
 // process emails
 Route::get('/emails', [GmailController::class, 'getEmails']);

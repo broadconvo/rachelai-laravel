@@ -69,10 +69,7 @@ class GmailController extends Controller
             ]
         );
 
-        return response()->json([
-            'token' => $googleToken->access_token,
-            'refreshToken' => $googleToken->refresh_token,
-        ]);
+        return redirect(env('RACHEL_URL'));
     }
 
     // should be authenticated
