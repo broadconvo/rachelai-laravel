@@ -114,4 +114,4 @@ jobs:
           app-name: 'rachelai-laravel'
           slot-name: 'Production'
           package: .
-          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_E4B90E62F7FD4C10849E72F73FE08088 }}
+          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE }}
