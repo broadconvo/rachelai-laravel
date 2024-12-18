@@ -35,10 +35,16 @@ if [ ! -f /usr/bin/unzip.bak ]; then
     echo "Replacing unzip with a p7zip wrapper..."
     mv /usr/bin/unzip /usr/bin/unzip.bak
     tee /usr/bin/unzip > /dev/null <<EOF
-#!/bin/bash
-7z x "\$@"
+args=()
+for arg in "$@"; do
+    case $arg in
+        -qq) ;;  # Ignore the -qq argument
+        *) args+=("$arg") ;;  # Append other arguments
+    esac
+done
+7z x "${args[@]}"
 EOF
-    chmod +x /usr/bin/unzip
+      chmod +x /usr/bin/unzip
 else
     echo "Unzip wrapper is already set up."
 fi
