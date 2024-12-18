@@ -27,7 +27,9 @@ fi
 # Check and install Zip/Unzip
 if ! command -v zip &> /dev/null || ! command -v unzip &> /dev/null; then
     echo "Zip or Unzip is not installed. Installing Zip and Unzip..."
-    apt-get install -y zip unzip
+    apt install -y p7zip-full
+    # 7z x google-apiclient.zip -o/home/site/wwwroot/vendor/google/apiclient-services
+
 else
     echo "Zip and Unzip are already installed."
 fi
