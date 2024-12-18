@@ -19,8 +19,8 @@ echo "========================================================"
 
 if ! command -v zsh &> /dev/null; then
     echo "Zsh is not installed. Installing Zsh..."
-    sudo apt update
-    sudo apt install -y zsh
+    apt update
+    apt install -y zsh
     echo "Zsh has been successfully installed!"
 else
     echo "Zsh is already installed. Skipping installation."
