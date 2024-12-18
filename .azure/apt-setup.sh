@@ -38,7 +38,7 @@ if [ ! -f /usr/bin/unzip.bak ]; then
 #!/bin/bash
 7z x "\$@"
 EOF
-    sudo chmod +x /usr/bin/unzip
+    chmod +x /usr/bin/unzip
 else
     echo "Unzip wrapper is already set up."
 fi
