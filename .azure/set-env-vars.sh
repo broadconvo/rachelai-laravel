@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Variables to replace with your actual values
-RESOURCE_GROUP="rachelai-laravel-group"
+RESOURCE_GROUP="rachelaidev_group"
 APP_SERVICE_NAME="rachelai-laravel"
 ENV_FILE=".env.prod"
 
