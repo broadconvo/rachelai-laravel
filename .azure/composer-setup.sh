@@ -1,4 +1,12 @@
-
+echo "======================================================== START"
+echo " Composer Setup"
+echo "--------------------------------------------------------"
+echo "- This section ensures that Composer is available and"
+echo "  ready to manage PHP dependencies for your application."
+echo "- Composer will be installed globally if it is not"
+echo "  already available on the system."
+echo "- After installation, it will handle dependency management"
+echo "  in the specified working directory."
 
 # Check if Composer is installed
 if ! command -v composer &> /dev/null; then
@@ -22,4 +30,6 @@ fi
 echo "Running Composer install..."
 composer install --working-dir=/home/site/wwwroot --no-interaction --no-dev --prefer-dist
 
-echo "Composer dependencies installed successfully."
+echo "--------------------------------------------------------"
+echo " Composer dependencies installed successfully."
+echo "========================================================"
