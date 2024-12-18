@@ -53,12 +53,13 @@ fi
 
 # Transform into valid JSON using sed
 fixed_json=$(echo "$GOOGLE_CREDENTIALS" | sed -E '
-    s/([{,])([a-zA-Z0-9_]+):/\1"\2":/g;              # Add quotes to keys
-    s/:([a-zA-Z0-9_@.\/:-]+)/:"\1"/g;               # Add quotes to string values
-    s/:\[([^\]]+)\]/:[\1]/g;                        # Ignore array values for now
-    s/:"\[([^]]+)\]"/:[\1]/g;                       # Handle array syntax
-    s/\[([^\]]+)\]/[ "\1" ]/g;                      # Add quotes to array elements
-    s/,[ ]*\]/]/g;                                  # Clean up trailing commas in arrays
+    s/([{,])([a-zA-Z0-9_]+):/\1"\2":/g;             # Add quotes to keys
+    s/:([a-zA-Z0-9_@.\/:-]+)/:"\1"/g;              # Add quotes to string values
+    s/:\"([a-zA-Z0-9_@.\/:-]+)\"/\:"\1"/g;         # Ensure values with special characters stay quoted
+    s/:\[([^\]]+)\]/:[\1]/g;                       # Ignore array values
+    s/"\[([^]]+)\]"/:[\1]/g;                       # Handle array syntax
+    s/\[([^\]]+)\]/[ "\1" ]/g;                     # Add quotes to array elements
+    s/,[ ]*\]/]/g;                                 # Clean up trailing commas in arrays
 ')
 
 # Write the output to a file
