@@ -31,6 +31,7 @@ fi
 echo "Running Composer install..."
 export COMPOSER_ALLOW_SUPERUSER=1
 export COMPOSER_PROCESS_TIMEOUT=240
+export COMPOSER_COMPRESSION=zip
 composer install --working-dir=/home/site/wwwroot --no-interaction --no-dev --prefer-dist
 
 echo "--------------------------------------------------------"
