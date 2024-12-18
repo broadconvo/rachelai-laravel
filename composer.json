@@ -9,6 +9,7 @@
     ],
     "license": "MIT",
     "require": {
+        "google/apiclient-services": "^0.386",
         "php": "^8.2",
         "ext-pdo_pgsql": "*",
         "laravel/framework": "^11.31",
