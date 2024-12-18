@@ -4,6 +4,8 @@ apt ugrade
 echo "Updating APT (Advanced Package Tool)"
 apt-get update --allow-releaseinfo-change
 
+echo "Install git"
+apt-get install git
 echo "Install zip unzip"
 apt-get install -y zip unzip
 
