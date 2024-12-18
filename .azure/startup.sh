@@ -3,7 +3,7 @@
 cp -r .azure/* /home
 rm /home/set-env-vars.sh
 
-bash /zsh-setup.sh
+bash /home/zsh-setup.sh
 bash /home/apt-setup.sh
 bash /home/composer-setup.sh
 
