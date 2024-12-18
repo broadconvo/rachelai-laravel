@@ -3,6 +3,9 @@ echo "Setting up Laravel"
 echo "Shutting down Laravel"
 php /home/site/wwwroot/artisan down --refresh=15 --secret="$APP_SECRET"
 
+echo "Copying google client"
+echo "$GOOGLE_CREDENTIALS" > /home/site/wwwroot/storage/app/google-api/client_secret.json
+
 echo "Migrating database"
 php /home/site/wwwroot/artisan migrate --force
 
