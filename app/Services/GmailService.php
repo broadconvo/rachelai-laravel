@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\User;
 use Google\Service\Gmail;
 use TomShaw\GoogleApi\GoogleClient;
 
@@ -16,12 +17,13 @@ class GmailService
 
     public function getUserMessages()
     {
-        $from = env('GMAIL_FROM_FILTER') ? 'from: '.env('GMAIL_FROM_FILTER') : '';
+        $filters = User::find(auth()->id())->emailFilters()->pluck('filters')->implode(' ') ?? '';
+
         $messagesResponse = $this->service
             ->users_messages
             ->listUsersMessages('me',
                 [
-                    'q' => 'is:unread ' . $from,
+                    'q' => 'is:unread in:inbox ' . $filters,
                     'maxResults' => 10
                 ]);
         $messages = [];
