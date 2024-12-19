@@ -112,6 +112,7 @@ class ProcessGmailMessages extends Command
         } catch (\Exception $e) {
             $this->error("Process failed for User: {$user->email}");
             Log::error("Error processing User: {$user->email}: " . $e->getMessage());
+            Log::error($e->getTraceAsString());
         }
     }
 }
