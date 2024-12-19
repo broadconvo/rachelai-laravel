@@ -90,14 +90,10 @@ class ProcessGmailMessages extends Command
                 $postData = [
                     'message' => $message['body'],
                     'language' => 'English',
-                    'unique_id' => '1734315099.149537',
-                    'time_str' => '20210930-120000',
-                    'from_did' => '85230011086',
-                    'from_exten' => '+12345678901',
-                    'caller_id_num' => '+12345678901',
-                    'direction' => 'in',
+                    'uniqueId' => '1734315099.149537',
+                    'rachelId' => '34682642', // for Addwin Customer Service
                 ];
-                $headers = ['Content-Type' => 'application/json'];
+                $headers = ['Content-Type' => 'application/json', 'Accept' => 'application/json'];
 
                 // Send the request to Rachel
                 // going to /voice/query
@@ -119,7 +115,7 @@ class ProcessGmailMessages extends Command
             }
 
         } catch (\Exception $e) {
-            $this->error("Error processing User: {$user->email}: ");
+            $this->error("Error processing User: {$user->email}: " . $e->getMessage());
             Log::error($e->getMessage());
         }
     }
