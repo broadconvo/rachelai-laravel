@@ -35,6 +35,14 @@ else
 fi
 
 echo ""
+
+echo "--------------------------------------------------------"
+echo " Step 3: Set defaults"
+echo "--------------------------------------------------------"
+
+echo "set zsh as default shell"
+# shellcheck disable=SC2046
+chsh -s $(which zsh) $USER
 # Define paths
 ZSHRC_SOURCE="$HOME/.zshrc"
 ZSHRC_PERSISTED="/home/.zshrc"
