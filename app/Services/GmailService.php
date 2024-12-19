@@ -22,7 +22,8 @@ class GmailService
 
     public function getUserMessages()
     {
-        $filters = User::find(auth()->id())->emailFilters()->pluck('filters')->implode(' ') ?? '';
+
+        $filters = auth()->user()?->emailFilters()->pluck('filters')->filter()->implode(' ') ?? '';
 
         $messagesResponse = $this->service
             ->users_messages
