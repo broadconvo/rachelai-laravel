@@ -80,12 +80,6 @@ class ProcessGmailMessages extends Command
                     continue;
                 }
 
-//                $result = $emailAgent->handle([
-//                    'input' => 'Create a draft message using the same language as the provided email.',
-//                    'body' => $message['body'],
-//                    'sender' => $message['sender']
-//                ]);
-
                 // check if email is related to business
                 $postData = [
                     'message' => $message['body'],
