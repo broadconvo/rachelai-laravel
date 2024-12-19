@@ -7,6 +7,8 @@ use App\Models\User;
 use App\Services\GmailService;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 use TomShaw\GoogleApi\GoogleClient;
 use TomShaw\GoogleApi\Models\GoogleToken;
 
@@ -32,7 +34,7 @@ class ProcessGmailMessages extends Command
      */
     public function handle()
     {
-        $this->info('Starting to process Gmail messages...');
+        $this->info('*** Starting to process Gmail messages ***');
 
         // Retrieve all active Google tokens
         $tokens = GoogleToken::all();
@@ -43,20 +45,22 @@ class ProcessGmailMessages extends Command
         }
 
         foreach ($tokens as $token) {
+            $this->line('<fg=green>' . str_repeat('-', 50) . '</>');
             $user =  Auth::loginUsingId($token->user_id);
 
-            $this->info("Processing messages for user {$user->email}...");
+            $this->info("Processing messages for {$user->email}...");
 
             // Process the messages for the user
-            $this->processMessages($token);
+            $this->processMessages($user);
         }
 
-        $this->info('End of process.');
+        $this->line('<fg=green>' . str_repeat('-', 50) . '</>');
+        $this->info('*** End of process ***');
     }
 
-    private function processMessages($token)
+    private function processMessages($user)
     {
-        $this->info('Processing messages...');
+        $this->info('Retrieving messages ...');
         try {
             // Initialize Google Client and set the token manually
 
@@ -65,31 +69,58 @@ class ProcessGmailMessages extends Command
             $messages = $gmailService->getUserMessages();
 
             if (!count($messages)) {
-                $this->info("No new messages for User ID: {$token->user_id}");
+                $this->info("No new messages for User: {$user->email}");
                 return;
             }
 
-            $emailAgent = new EmailAgent();
+            $this->info('Processing messages ...');
             foreach ($messages as $message) {
                 if ($gmailService->hasDraft($message['id'])) {
                     $this->info("Draft already exists for message ID: {$message['id']}");
                     continue;
                 }
 
-                $result = $emailAgent->handle([
-                    'input' => 'Create a draft message using the same language as the provided email.',
-                    'body' => $message['body'],
-                    'sender' => $message['sender']
-                ]);
+//                $result = $emailAgent->handle([
+//                    'input' => 'Create a draft message using the same language as the provided email.',
+//                    'body' => $message['body'],
+//                    'sender' => $message['sender']
+//                ]);
+
+                // check if email is related to business
+                $postData = [
+                    'message' => $message['body'],
+                    'language' => 'English',
+                    'unique_id' => '1734315099.149537',
+                    'time_str' => '20210930-120000',
+                    'from_did' => '85230011086',
+                    'from_exten' => '+12345678901',
+                    'caller_id_num' => '+12345678901',
+                    'direction' => 'in',
+                ];
+                $headers = ['Content-Type' => 'application/json'];
+
+                // Send the request to Rachel
+                // going to /voice/query
+                $response = Http::withHeaders($headers)->post(env('RACHEL_QUERY_URL'), $postData);
+
+                $responseBody = 'No response from Rachel.';
+                if ($response->successful()) {
+                    // Get the response body as an array
+                    $responseBody = $response->json()['response'];
+                } else {
+                    // Handle errors
+                    abort($response->status(), 'Error occurred: '.$response->body());
+                }
 
                 // Create a draft reply
-                $gmailService->createDraft($message['sender'], $message['id'], $result->content());
+                $gmailService->createDraft($message['sender'], $message['id'], $responseBody);
 
-                $this->info("Processed message ID: {$message['id']} for User ID: {$token->user_id}");
+                $this->info("Created draft in message ID: {$message['id']} for User: {$user->email}");
             }
 
         } catch (\Exception $e) {
-            $this->error("Error processing User ID {$token->user_id}: ".$e->getMessage());
+            $this->error("Error processing User: {$user->email}: ");
+            Log::error($e->getMessage());
         }
     }
 }
