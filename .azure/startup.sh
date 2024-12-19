@@ -16,9 +16,6 @@ cp /home/site/wwwroot/.azure/nginx-default /etc/nginx/sites-enabled/default
 echo "Copying php.ini configuration"
 cp /home/site/wwwroot/.azure/php.ini /usr/local/etc/php/conf.d/php.ini
 
-echo "Copying laravel worker configuration"
-cp /home/site/wwwroot/.azure/laravel-worker.conf /etc/supervisor/conf.d/laravel-worker.conf
-
 echo "Restarting nginx"
 service nginx stop
 service nginx start
@@ -27,6 +24,9 @@ echo "======================================================== END"
 echo "======================================================== START"
 echo "Supervisor Setup"
 echo "========================================================"
+echo "Copying laravel worker supervisor configuration"
+cp /home/site/wwwroot/.azure/laravel-worker.conf /etc/supervisor/conf.d/laravel-worker.conf
+
 echo "Creating supervisor Directory"
 mkdir "/home/site/wwwroot/storage/logs/supervisor"
 touch "/home/site/wwwroot/storage/logs/supervisor/queue_worker.err.log"
