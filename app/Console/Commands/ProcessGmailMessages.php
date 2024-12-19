@@ -34,6 +34,7 @@ class ProcessGmailMessages extends Command
     public function handle()
     {
         $this->info('*** Starting to process Gmail messages ***');
+        Log::info('*** Starting to process Gmail messages ***');
 
         // Retrieve all active Google tokens
         $tokens = GoogleToken::all();
