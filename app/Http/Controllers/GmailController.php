@@ -26,7 +26,7 @@ class GmailController extends Controller
         $state = base64_encode($phoneNumbers);
 
         $targetUrl = Socialite::with('google')
-            ->with(['access_type' => 'offline', 'prompt' => 'consent select_account', 'state'=>$state])
+            ->with(['access_type' => 'offline', 'prompt' => 'select_account', 'state'=>$state])
             ->scopes($scopes)
             ->stateless()
             ->redirect()
