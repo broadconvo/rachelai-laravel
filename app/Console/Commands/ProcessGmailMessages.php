@@ -106,6 +106,7 @@ class ProcessGmailMessages extends Command
                 $gmailService->createDraft($message['sender'], $message['id'], $responseBody);
 
                 $this->info("Created draft in message ID: {$message['id']} for User: {$user->email}");
+                Log::info("Created draft in message ID: {$message['id']} for User: {$user->email}");
             }
 
         } catch (\Exception $e) {
