@@ -2,7 +2,11 @@
 echo "======================================================== START"
 echo " Database Checkup"
 echo "========================================================"
-# Wait for PostgreSQL to be ready
+
+echo "Installing PostgreSQL client"
+apt install -y postgresql-client
+
+echo "Waiting for PostgreSQL to become ready..."
 for i in {1..10}; do
     if pg_isready -h "$DB_HOST" -p "$DB_PORT" -U "$DB_USERNAME"; then
         echo "PostgreSQL is ready!"
