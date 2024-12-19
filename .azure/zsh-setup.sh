@@ -35,19 +35,44 @@ else
 fi
 
 echo ""
-echo "Set Zsh as the default shell"
-# shellcheck disable=SC2046
-chsh -s $(which zsh) $USER
-echo ""
-echo "Add the following lines to the end of the ~/.zshrc file"
-echo 'cd /home/site/wwwroot' >> ~/.zshrc
-echo ""
-echo "Setting Zsh history file under /home"
+# Define paths
+ZSHRC_SOURCE="$HOME/.zshrc"
+ZSHRC_PERSISTED="/home/.zshrc"
+
+echo "Starting Zsh configuration setup..."
+
+# Step 1: Backup existing ~/.zshrc to /home/.zshrc
+if [ -f "$ZSHRC_SOURCE" ]; then
+    echo "Backing up existing ~/.zshrc to /home/.zshrc..."
+    cp "$ZSHRC_SOURCE" "$ZSHRC_PERSISTED"
+else
+    echo "No existing ~/.zshrc found. Creating a new /home/.zshrc..."
+    touch "$ZSHRC_PERSISTED"
+fi
+
+# Step 2: Add default configuration to /home/.zshrc
+echo "Adding default configurations to /home/.zshrc..."
+cat <<EOL >> "$ZSHRC_PERSISTED"
+
+# Default directory for Azure Web App
+cd /home/site/wwwroot
+
+# Zsh history configuration
 export HISTFILE=/home/.zsh_history
-echo "Setting Zsh history size"
 export HISTSIZE=10000
-echo "Setting Zsh history file size"
 export SAVEHIST=10000
-echo "Creating Zsh history file"
-touch /home/.zsh_history
+
+# Git pull alias
+alias gitpull='cd /home/site/wwwroot && git pull && echo "Git pull complete!"'
+EOL
+
+# Step 3: Replace ~/.zshrc with sourcing /home/.zshrc
+echo "Replacing ~/.zshrc to source /home/.zshrc..."
+echo 'source /home/.zshrc' > "$ZSHRC_SOURCE"
+
+# Step 4: Reload Zsh configuration
+echo "Reloading Zsh configuration..."
+source "$ZSHRC_SOURCE"
+
+echo "Zsh configuration setup complete!"
 echo "======================================================== END"
