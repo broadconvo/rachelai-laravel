@@ -22,6 +22,10 @@ cp /home/site/wwwroot/.azure/laravel-worker.conf /etc/supervisor/conf.d/laravel-
 echo "Creating supervisor Directory"
 mkdir "/home/site/wwwroot/storage/app/private/logs"
 mkdir "/home/site/wwwroot/storage/app/private/logs/supervisor"
+touch "/home/site/wwwroot/storage/app/private/logs/supervisor/queue_worker.err.log"
+touch "/home/site/wwwroot/storage/app/private/logs/supervisor/queue_worker.out.log"
+touch "/home/site/wwwroot/storage/app/private/logs/supervisor/gmail_process_messages.err.log"
+touch "/home/site/wwwroot/storage/app/private/logs/supervisor/gmail_process_messages.out.log"
 
 echo "Restarting nginx"
 service nginx stop
