@@ -6,16 +6,13 @@ echo "--------------------------------------------------------"
 echo "- This script ensures Zsh (a powerful shell) and"
 echo "  Oh My Zsh (a popular framework for Zsh) are installed."
 echo "- It first checks for existing installations to avoid"
-echo "  unnecessary reinstallation."
+echo "  unnecessary re-installation."
 echo "========================================================"
 
 echo ""
-echo "========================================================"
+echo "--------------------------------------------------------"
 echo " Step 1: Checking Zsh Installation"
 echo "--------------------------------------------------------"
-echo "- Zsh is a feature-rich alternative to Bash."
-echo "- This step verifies if Zsh is already installed."
-echo "========================================================"
 
 if ! command -v zsh &> /dev/null; then
     echo "Zsh is not installed. Installing Zsh..."
@@ -25,14 +22,9 @@ if ! command -v zsh &> /dev/null; then
 else
     echo "Zsh is already installed. Skipping installation."
 fi
-
-echo ""
-echo "========================================================"
+echo "--------------------------------------------------------"
 echo " Step 2: Checking Oh My Zsh Installation"
 echo "--------------------------------------------------------"
-echo "- Oh My Zsh is a framework for managing Zsh configurations."
-echo "- This step verifies if Oh My Zsh is already installed."
-echo "========================================================"
 
 if [ ! -d "$HOME/.oh-my-zsh" ]; then
     echo "Oh My Zsh is not installed. Installing Oh My Zsh..."
@@ -43,9 +35,19 @@ else
 fi
 
 echo ""
+echo "Set Zsh as the default shell"
+# shellcheck disable=SC2046
+chsh -s $(which zsh) $USER
+echo ""
+echo "Add the following lines to the end of the ~/.zshrc file"
+echo 'cd /home/site/wwwroot' >> ~/.zshrc
+echo ""
+echo "Setting Zsh history file under /home"
+export HISTFILE=/home/.zsh_history
+echo "Setting Zsh history size"
+export HISTSIZE=10000
+echo "Setting Zsh history file size"
+export SAVEHIST=10000
+echo "Creating Zsh history file"
+touch /home/.zsh_history
 echo "======================================================== END"
-echo " Zsh and Oh My Zsh setup complete!"
-echo "--------------------------------------------------------"
-echo "- Enjoy using Zsh with the power and flexibility"
-echo "  of Oh My Zsh on your system."
-echo "========================================================"
