@@ -44,18 +44,19 @@ echo "set zsh as default shell"
 # shellcheck disable=SC2046
 chsh -s $(which zsh) $USER
 # Define paths
-ZSHRC_SOURCE="$HOME/.zshrc"
+ZSHRC_SOURCE="/root/.zshrc"
 ZSHRC_PERSISTED="/home/.zshrc"
 
 echo "Starting Zsh configuration setup..."
 
 # Step 1: Backup existing ~/.zshrc to /home/.zshrc
+# TODO:
 if [ -f "$ZSHRC_SOURCE" ]; then
     echo "Backing up existing ~/.zshrc to /home/.zshrc..."
-    cp "$ZSHRC_SOURCE" "$ZSHRC_PERSISTED"
+#    cp "$ZSHRC_SOURCE" "$ZSHRC_PERSISTED"
 else
     echo "No existing ~/.zshrc found. Creating a new /home/.zshrc..."
-    touch "$ZSHRC_PERSISTED"
+#    touch "$ZSHRC_PERSISTED"
 fi
 
 # Step 2: Add default configuration to /home/.zshrc
@@ -71,16 +72,17 @@ export HISTSIZE=10000
 export SAVEHIST=10000
 
 # Git pull alias
-alias gitpull='cd /home/site/wwwroot && git pull && echo "Git pull complete!"'
+alias gitpull='cd /home/site/wwwroot && git pull origin main  && echo "Git pull complete!"'
 EOL
 
+# TODO:
 # Step 3: Replace ~/.zshrc with sourcing /home/.zshrc
-echo "Replacing ~/.zshrc to source /home/.zshrc..."
-echo 'source /home/.zshrc' > "$ZSHRC_SOURCE"
+#echo "Replacing ~/.zshrc to source /home/.zshrc..."
+#echo 'source /home/.zshrc' > "$ZSHRC_SOURCE"
 
 # Step 4: Reload Zsh configuration
-echo "Reloading Zsh configuration..."
-source "$ZSHRC_SOURCE"
+#echo "Reloading Zsh configuration..."
+#source "$ZSHRC_SOURCE"
 
 echo "Zsh configuration setup complete!"
 echo "======================================================== END"
