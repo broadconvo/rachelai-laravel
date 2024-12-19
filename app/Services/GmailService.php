@@ -94,6 +94,7 @@ class GmailService
             ['user_id' => auth()->id()],
             [
                 'access_token' => $newToken['access_token'],
+                'refresh_token' => $newToken['refresh_token'],
                 'expires_in' => 3600, // 1hr in seconds
             ]
         );
