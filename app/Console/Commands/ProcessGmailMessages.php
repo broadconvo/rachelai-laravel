@@ -68,12 +68,12 @@ class ProcessGmailMessages extends Command
             $gmailService->refreshToken($token);
             $messages = $gmailService->getUserMessages();
 
-            if (!count($messages)) {
+            if (!$messageCount = count($messages)) {
                 $this->info("No new messages for User: {$user->email}");
                 return;
             }
 
-            $this->info('Processing messages ...');
+            $this->info("Unread messages found: $messageCount");
             foreach ($messages as $message) {
                 if ($gmailService->hasDraft($message['id'])) {
                     $this->info("Draft already exists for message ID: {$message['id']}");
@@ -105,8 +105,8 @@ class ProcessGmailMessages extends Command
                 // Create a draft reply
                 $gmailService->createDraft($message['sender'], $message['id'], $responseBody);
 
-                $this->info("Created draft in message ID: {$message['id']} for User: {$user->email}");
-                Log::info("Created draft in message ID: {$message['id']} for User: {$user->email}");
+                $this->info("* Created draft in message ID: {$message['id']} for User: {$user->email}");
+                Log::info("* Created draft in message ID: {$message['id']} for User: {$user->email}");
             }
 
         } catch (\Exception $e) {
