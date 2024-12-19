@@ -104,6 +104,29 @@ class GmailService
         return $this->service->users_drafts->create('me', $draft);
     }
 
+    public function hasDraft(string $messageId): bool
+    {
+        try {
+            // Fetch the list of drafts
+            $drafts = $this->service->users_drafts->listUsersDrafts('me')->getDrafts();
+
+            foreach ($drafts as $draft) {
+                // Retrieve the draft details
+                $draftDetails = $this->service->users_drafts->get('me', $draft->getId());
+
+                // Check if the draft's message matches the given message ID
+                if ($draftDetails->getMessage()->getThreadId() === $messageId) {
+                    return true; // Draft already exists
+                }
+            }
+
+            return false; // No matching draft found
+        } catch (\Exception $e) {
+            // Log or handle the exception
+            throw new \Exception("Error checking drafts: " . $e->getMessage());
+        }
+    }
+
     public function watchGmail()
     {
         // config('google-api.pubsub_topic')
