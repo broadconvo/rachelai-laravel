@@ -4,6 +4,8 @@ namespace App\Services;
 
 use App\Models\User;
 use Google\Service\Gmail;
+use Google\Service\Gmail\WatchRequest;
+use Illuminate\Support\Facades\Http;
 use TomShaw\GoogleApi\GoogleClient;
 
 class GmailService
@@ -23,7 +25,7 @@ class GmailService
             ->users_messages
             ->listUsersMessages('me',
                 [
-                    'q' => 'is:unread in:inbox ' . $filters,
+                    'q' => 'is:unread in:inbox '.$filters,
                     'maxResults' => 10
                 ]);
         $messages = [];
@@ -83,11 +85,11 @@ class GmailService
 
         // Construct a raw MIME message
         $rawMessage =
-            "From: $from\r\n" .
-            "To: $to\r\n" .
-            "MIME-Version: 1.0\r\n" .
-            "Content-Type: text/plain; charset=UTF-8\r\n" .
-            "Content-Transfer-Encoding: 7bit\r\n\r\n" .
+            "From: $from\r\n".
+            "To: $to\r\n".
+            "MIME-Version: 1.0\r\n".
+            "Content-Type: text/plain; charset=UTF-8\r\n".
+            "Content-Transfer-Encoding: 7bit\r\n\r\n".
             $body;
 
         // Base64 URL-safe encode the message
@@ -125,7 +127,7 @@ class GmailService
             return false; // No matching draft found
         } catch (\Exception $e) {
             // Log or handle the exception
-            throw new \Exception("Error checking drafts: " . $e->getMessage());
+            throw new \Exception("Error checking drafts: ".$e->getMessage());
         }
     }
 
