@@ -23,6 +23,7 @@ echo "Restarting supervisor"
 service supervisor restart
 echo "======================================================== END"
 
+bash /home/site/wwwroot/.azure/database-setup.sh
 bash /home/site/wwwroot/.azure/laravel-setup.sh
 
 zsh
