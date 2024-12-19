@@ -19,11 +19,16 @@ cp /home/site/wwwroot/.azure/php.ini /usr/local/etc/php/conf.d/php.ini
 echo "Copying laravel worker configuration"
 cp /home/site/wwwroot/.azure/laravel-worker.conf /etc/supervisor/conf.d/laravel-worker.conf
 
+echo "Creating supervisor Directory"
+mkdir "/home/site/wwwroot/storage/app/logs/supervisor"
+
 echo "Restarting nginx"
-service nginx restart
+service nginx stop
+service nginx start
 
 echo "Restarting supervisor"
-service supervisor restart
+service supervisor stop
+service supervisor start
 echo "======================================================== END"
 
 bash /home/site/wwwroot/.azure/database-setup.sh
