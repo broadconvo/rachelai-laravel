@@ -23,13 +23,13 @@ class GmailService
     public function getUserMessages()
     {
 
-        $filters = auth()->user()?->emailFilters()->pluck('filters')->filter()->implode(' ') ?? '';
+        $filters = auth()->user()?->emailFilters()->first()?->filters ?? '';
 
         $messagesResponse = $this->service
             ->users_messages
             ->listUsersMessages('me',
                 [
-                    'q' => 'is:unread in:inbox '.$filters,
+                    'q' => 'is:unread in:inbox from:'.$filters,
                     'maxResults' => 10
                 ]);
         $messages = [];

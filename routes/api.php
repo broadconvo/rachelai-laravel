@@ -28,3 +28,5 @@ Route::get('/emails/watch', [GmailController::class, 'watchGmail']);
 
 
 Route::post('/email', [EmailAgentController::class, 'create']);
+Route::post('/email/filters', [EmailAgentController::class, 'createFilters']);
+

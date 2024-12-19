@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Agents\EmailAgent;
 use App\Agents\TranslatorAgent;
+use App\Models\EmailFilter;
+use App\Models\User;
 use Illuminate\Http\Request;
 
 class EmailAgentController extends Controller
@@ -32,6 +34,24 @@ class EmailAgentController extends Controller
         return response()->json([
             'response' => $result->content(),
             'english' => $englishResult->content()
+        ]);
+    }
+
+    public function createFilters()
+    {
+        $user = User::where('email', request('email'))->first();
+        $existingFilter = EmailFilter::where('user_id', $user->id)->first();
+
+        EmailFilter::updateOrCreate(
+            ['id' => $existingFilter->id],
+            [
+                'user_id' => $user->id,
+                'filters' => request('filter')
+            ]
+        );
+
+        return response()->json([
+            'message' => 'Filter created successfully'
         ]);
     }
 }
