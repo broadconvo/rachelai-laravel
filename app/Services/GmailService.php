@@ -88,7 +88,7 @@ class GmailService
         $client->setClientSecret(env('GOOGLE_CLIENT_SECRET'));
         $client->refreshToken($googleToken->refresh_token); // Your stored refresh token
 
-        $newToken = $client->fetchAccessTokenWithRefreshToken();
+        $newToken = $client->fetchAccessTokenWithRefreshToken($googleToken->refresh_token);
 
         GoogleToken::updateOrCreate(
             ['user_id' => auth()->id()],
