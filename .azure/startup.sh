@@ -1,6 +1,6 @@
 # name this file as "startup.sh" and call it from "startup command" as "/home/startup.sh"
-bash /home/site/wwwroot/.azure/zsh-setup.sh
 bash /home/site/wwwroot/.azure/apt-setup.sh
+bash /home/site/wwwroot/.azure/zsh-setup.sh
 bash /home/site/wwwroot/.azure/composer-setup.sh
 
 echo "======================================================== START"
