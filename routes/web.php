@@ -5,8 +5,7 @@ use Laravel\Socialite\Facades\Socialite;
 
 Route::get('/', function () {
     return [
-        'Laravel' => app()->version(),
-        'message' => 'Welcome to Rachel AI'
+        'message' => 'Welcome to RachelAI'
     ];
 });
 
