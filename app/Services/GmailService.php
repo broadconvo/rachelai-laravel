@@ -3,18 +3,21 @@
 namespace App\Services;
 
 use App\Models\User;
+use Google\Client;
 use Google\Service\Gmail;
 use Google\Service\Gmail\WatchRequest;
-use Illuminate\Support\Facades\Http;
 use TomShaw\GoogleApi\GoogleClient;
+use TomShaw\GoogleApi\Models\GoogleToken;
 
 class GmailService
 {
     protected Gmail $service;
+    protected GoogleClient $client;
 
     public function __construct(GoogleClient $client)
     {
         $this->service = new Gmail($client());
+        $this->client = $client;
     }
 
     public function getUserMessages()
@@ -76,6 +79,24 @@ class GmailService
             'body' => $body,
             'sender' => $sender,
         ];
+    }
+
+    public function refreshToken(GoogleToken $googleToken)
+    {
+        $client = new Client();
+        $client->setClientId(env('GOOGLE_CLIENT_ID'));
+        $client->setClientSecret(env('GOOGLE_CLIENT_SECRET'));
+        $client->refreshToken($googleToken->refresh_token); // Your stored refresh token
+
+        $newToken = $client->fetchAccessTokenWithRefreshToken();
+
+        GoogleToken::updateOrCreate(
+            ['user_id' => auth()->id()],
+            [
+                'access_token' => $newToken['access_token'],
+                'expires_in' => 3600, // 1hr in seconds
+            ]
+        );
     }
 
     public function createDraft($to, $threadId, $body, $from = null)

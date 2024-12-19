@@ -2,9 +2,8 @@
 
 namespace App\Console\Commands;
 
-use App\Agents\EmailAgent;
-use App\Models\User;
 use App\Services\GmailService;
+use Google\Client;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
@@ -51,14 +50,14 @@ class ProcessGmailMessages extends Command
             $this->info("Processing messages for {$user->email}...");
 
             // Process the messages for the user
-            $this->processMessages($user);
+            $this->processMessages($user, $token);
         }
 
         $this->line('<fg=green>' . str_repeat('-', 50) . '</>');
         $this->info('*** End of process ***');
     }
 
-    private function processMessages($user)
+    private function processMessages($user, $token)
     {
         $this->info('Retrieving messages ...');
         try {
@@ -66,6 +65,7 @@ class ProcessGmailMessages extends Command
 
             // Initialize Gmail Service
             $gmailService = new GmailService(app(GoogleClient::class));
+            $gmailService->refreshToken($token);
             $messages = $gmailService->getUserMessages();
 
             if (!count($messages)) {

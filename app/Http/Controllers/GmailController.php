@@ -20,7 +20,7 @@ class GmailController extends Controller
             [
                 'https://www.googleapis.com/auth/userinfo.profile',
                 'https://www.googleapis.com/auth/userinfo.email',
-                'openid'
+                'openid',
             ]
         );
         $state = base64_encode($phoneNumbers);
