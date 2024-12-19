@@ -20,7 +20,8 @@ echo "Copying laravel worker configuration"
 cp /home/site/wwwroot/.azure/laravel-worker.conf /etc/supervisor/conf.d/laravel-worker.conf
 
 echo "Creating supervisor Directory"
-mkdir "/home/site/wwwroot/storage/app/logs/supervisor"
+mkdir "/home/site/wwwroot/storage/app/private/logs"
+mkdir "/home/site/wwwroot/storage/app/private/logs/supervisor"
 
 echo "Restarting nginx"
 service nginx stop
