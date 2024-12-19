@@ -16,9 +16,16 @@ class GmailService
 
     public function getUserMessages()
     {
-        $messagesResponse = $this->service->users_messages->listUsersMessages('me', ['q' => 'is:unread', 'maxResults' => 10]);
-
+        $from = env('GMAIL_FROM_FILTER') ? 'from: '.env('GMAIL_FROM_FILTER') : '';
+        $messagesResponse = $this->service
+            ->users_messages
+            ->listUsersMessages('me',
+                [
+                    'q' => 'is:unread ' . $from,
+                    'maxResults' => 10
+                ]);
         $messages = [];
+
         foreach ($messagesResponse->getMessages() as $message) {
             $messages[] = $this->getMessageDetails($message->getId());
         }
