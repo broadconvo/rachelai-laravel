@@ -1,4 +1,6 @@
-echo "======================================================== START"
+echo "========================================================"
+echo "START"
+echo "========================================================"
 echo " Composer Setup"
 echo "--------------------------------------------------------"
 echo "- This section ensures that Composer is available and"
@@ -14,13 +16,13 @@ if ! command -v composer &> /dev/null; then
     echo "Composer is not installed. Installing now..."
 
     # Create a directory for Composer installer
-    mkdir -p /home/ext
+    mkdir -p /home/install/ext
 
     # Download Composer installer
-    wget https://getcomposer.org/installer -O /home/ext/composer-setup.php
+    wget https://getcomposer.org/installer -O /home/install/ext/composer-setup.php
 
     # Install Composer globally
-    php /home/ext/composer-setup.php --install-dir=/usr/local/bin --filename=composer
+    php /home/install/ext/composer-setup.php --install-dir=/usr/local/bin --filename=composer
 
     echo "Composer installed successfully."
 else

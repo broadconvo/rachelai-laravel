@@ -64,7 +64,7 @@ echo "Copy own .zshrc to /root/.zshrc..."
 cp /home/site/wwwroot/.azure/.zshrc /root/.zshrc
 
 echo "Source /root/.zshrc configuration..."
-zsh /home/zsh-source.sh
+zsh /home/install/zsh-source.sh
 
 echo ""
 echo "Zsh configuration setup complete!"
