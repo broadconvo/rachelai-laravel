@@ -28,6 +28,6 @@ Route::get('/emails/watch', [GmailController::class, 'watchGmail']);
 
 
 Route::post('/email', [EmailAgentController::class, 'create']);
-Route::post('/email/filters', [EmailAgentController::class, 'createFilters']);// ->withoutMiddleware(Ensure);
 Route::get('/email/filters', [EmailAgentController::class, 'getFilters']);
+Route::get('/email/filters/create', [EmailAgentController::class, 'createFilters']);// ->withoutMiddleware(Ensure);
 
