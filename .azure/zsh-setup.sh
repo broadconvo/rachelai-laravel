@@ -49,7 +49,24 @@ else
     echo "Oh-My-Zsh is already installed. Skipping installation."
 fi
 
-zsh /home/zsh-default-setup.sh
+echo ""
+echo "--------------------------------------------------------"
+echo " Step 3: Set defaults"
+echo "--------------------------------------------------------"
+
+echo "Starting ZSH Defaults setup..."
+echo "Set zsh as default shell"
+# shellcheck disable=SC2046
+chsh -s $(which zsh)
+
+# Step 2: Add default configuration to /home/.zshrc
+echo "Copy own .zshrc to /home/.zshrc..."
+cp /home/site/wwwroot/.azure/.zshrc /home/.zshrc
+
+echo "Zsh configuration setup complete!"
+echo "Source /home/.zshrc configuration..."
+
+zsh /home/zsh-source.sh
 echo "========================================================"
 echo "END"
 echo "========================================================"
