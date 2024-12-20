@@ -66,7 +66,7 @@ ZSHRC_TARGET="/home/.zshrc"
 # Step 2: Add default configuration to /home/.zshrc
 echo "Add default configurations to /home/.zshrc..."
 cat <<EOL >> "$ZSHRC_TARGET"
-
+!# /bin/zsh
 # Default directory for Azure Web App
 export PATH=$HOME/bin:$HOME/.local/bin:/usr/local/bin:$PATH
 export ZSH="$HOME/.oh-my-zsh"
@@ -86,10 +86,14 @@ alias project='cd /home/site/wwwroot'
 alias gpm='cd /home/site/wwwroot && git pull origin main  && echo "Git pull complete!"'
 alias art='/usr/local/bin/php /home/site/wwwroot/artisan'
 alias tinker='/usr/local/bin/php /home/site/wwwroot/artisan tinker'
+
+prompt_context() {
+  return
+}
 EOL
 
 echo "Source /home/.zshrc configuration..."
-source "/home/.zshrc"
+source /home/.zshrc
 
 echo "Zsh configuration setup complete!"
 echo "========================================================"
