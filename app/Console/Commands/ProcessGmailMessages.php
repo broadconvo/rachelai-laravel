@@ -87,6 +87,7 @@ class ProcessGmailMessages extends Command
                     'language' => 'English',
                     'uniqueId' => '1734315099.149537',
                     'rachelId' => '34682642', // for Addwin Customer Service
+                    'sender' => $user->name
                 ];
                 $headers = ['Content-Type' => 'application/json', 'Accept' => 'application/json'];
 

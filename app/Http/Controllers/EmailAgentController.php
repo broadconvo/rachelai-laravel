@@ -54,4 +54,14 @@ class EmailAgentController extends Controller
             'message' => 'Filter created successfully'
         ]);
     }
+
+    public function getFilters()
+    {
+        $user = User::where('email', request('email'))->first();
+        $filter = EmailFilter::where('user_id', $user->id)->first();
+
+        return response()->json([
+            'filter' => $filter->filters
+        ]);
+    }
 }
