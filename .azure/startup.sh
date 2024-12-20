@@ -1,5 +1,10 @@
-# name this file as "startup.sh" and call it from "startup command" as "/home/startup.sh"
+echo "========================================================"
+echo "STARTUP"
+echo "========================================================"
+echo "Starting startup script..."
+echo "Create directory for installation scripts"
 mkdir /home/install
+echo "Copying installation scripts"
 cp /home/site/wwwroot/.azure/* /home/install/
 rm -rf /home/install/set-env-vars.sh
 
