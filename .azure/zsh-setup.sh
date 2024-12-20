@@ -60,11 +60,11 @@ echo "Set zsh as default shell"
 chsh -s $(which zsh)
 
 # Step 2: Add default configuration to /home/.zshrc
-echo "Copy own .zshrc to /home/.zshrc..."
+echo "Copy own .zshrc to /root/.zshrc..."
 cp /home/site/wwwroot/.azure/.zshrc /root/.zshrc
 
-echo "Source /home/.zshrc configuration..."
-source /root/.zshrc
+echo "Source /root/.zshrc configuration..."
+zsh /home/zsh-source.sh
 
 echo ""
 echo "Zsh configuration setup complete!"
