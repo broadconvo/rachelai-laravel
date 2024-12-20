@@ -13,9 +13,7 @@ bash /home/site/wwwroot/.azure/zsh-setup.sh
 bash /home/site/wwwroot/.azure/composer-setup.sh
 
 echo "========================================================"
-echo "START"
-echo "========================================================"
-echo "Additional Setups"
+echo "Nginx Setup"
 echo "--------------------------------------------------------"
 
 echo "Copying nginx configuration"
@@ -27,13 +25,11 @@ cp /home/site/wwwroot/.azure/php.ini /usr/local/etc/php/conf.d/php.ini
 echo "Restarting nginx"
 service nginx stop
 service nginx start
-echo "========================================================"
+echo "--------------------------------------------------------"
 echo "END"
 echo "========================================================"
 echo ""
 
-echo "========================================================"
-echo "START"
 echo "========================================================"
 echo "Supervisor Setup"
 echo "--------------------------------------------------------"
@@ -66,7 +62,7 @@ if ! service supervisor status | grep -q "is running"; then
     echo "Error: Supervisor did not start after 10 attempts."
     exit 1
 fi
-echo "========================================================"
+echo "--------------------------------------------------------"
 echo "END"
 echo "========================================================"
 echo ""

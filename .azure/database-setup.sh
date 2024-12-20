@@ -1,7 +1,7 @@
 #!/bin/bash
-echo "======================================================== START"
-echo " Database Checkup"
 echo "========================================================"
+echo "Database Checkup"
+echo "--------------------------------------------------------"
 
 echo "Installing PostgreSQL client"
 apt install -y postgresql-client
@@ -22,4 +22,6 @@ if [ $i -eq 10 ]; then
     echo "Error: PostgreSQL did not become ready after 10 attempts."
     exit 1
 fi
-echo "======================================================== END"
+echo "--------------------------------------------------------"
+echo "END"
+echo "========================================================"

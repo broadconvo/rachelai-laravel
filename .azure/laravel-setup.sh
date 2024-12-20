@@ -7,7 +7,7 @@ echo " and deploying a Laravel application on a server. It"
 echo " includes tasks such as updating environment configurations,"
 echo " clearing and caching Laravel components, handling Google"
 echo " API credentials, and restarting Laravel workers."
-echo "========================================================"
+echo "--------------------------------------------------------"
 
 echo "Shutting down Laravel"
 php /home/site/wwwroot/artisan down --refresh=15 --secret="$APP_SECRET"
@@ -77,7 +77,7 @@ php /home/site/wwwroot/artisan storage:link
 
 echo "Turning on Laravel"
 php /home/site/wwwroot/artisan up
-echo "========================================================"
+echo "--------------------------------------------------------"
 echo "END"
 echo "========================================================"
 echo ""

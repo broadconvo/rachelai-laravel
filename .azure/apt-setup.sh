@@ -1,11 +1,11 @@
-echo "======================================================== START"
+echo "========================================================"
 echo " Advanced Package Tools (APT) Setup"
 echo "--------------------------------------------------------"
 echo "- APT (Advanced Package Tool) is the package manager"
 echo "  for Debian-based systems like Ubuntu."
 echo "- This step ensures the system's package lists are up-to-date."
 echo "- Handles updating repositories and resolving version conflicts."
-echo "========================================================"
+echo "--------------------------------------------------------"
 
 #echo "Upgrade APT (Advanced Package Tool)"
 #apt upgrade
@@ -77,4 +77,6 @@ if ! command -v supervisorctl &> /dev/null; then
 else
     echo "Supervisor is already installed."
 fi
-echo "======================================================== END"
+echo "--------------------------------------------------------"
+echo "END"
+echo "========================================================"

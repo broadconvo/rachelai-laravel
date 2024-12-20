@@ -1,6 +1,4 @@
 echo "========================================================"
-echo "START"
-echo "========================================================"
 echo " Composer Setup"
 echo "--------------------------------------------------------"
 echo "- This section ensures that Composer is available and"
@@ -36,5 +34,5 @@ export COMPOSER_PROCESS_TIMEOUT=240
 export COMPOSER_COMPRESSION=zip
 composer install --working-dir=/home/site/wwwroot --no-interaction --no-dev --prefer-dist
 echo "--------------------------------------------------------"
-echo " Composer dependencies installed successfully."
+echo "END - Composer dependencies installed successfully."
 echo "========================================================"
