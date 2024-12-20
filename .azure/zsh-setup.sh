@@ -1,6 +1,8 @@
 #!/bin/bash
 
-echo "======================================================== START"
+echo "========================================================"
+echo "START"
+echo "========================================================"
 echo " Zsh and Oh My Zsh Setup"
 echo "--------------------------------------------------------"
 echo "- This script ensures Zsh (a powerful shell) and"
@@ -27,43 +29,51 @@ echo " Step 2: Checking Oh My Zsh Installation"
 echo "--------------------------------------------------------"
 
 if [ ! -d "$HOME/.oh-my-zsh" ]; then
-    echo "Oh My Zsh is not installed. Installing Oh My Zsh..."
+    echo "Oh My Zsh is not installed."
+    echo "Installing Oh My Zsh..."
     yes | sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
-    echo "Oh My Zsh has been successfully installed!"
+    echo "Installing fonts-powerline..."
+    apt install -y fonts-powerline
+    echo "Installing locales..."
+    apt install -y locales
+    echo "Installing dialog..."
+    apt install -y dialog
+    echo "Generating locale en ..."
+    locale-gen en_US.UTF-8
+    echo "Exporting LANG, LC_CALL, TERM..."
+    export LANG=en_US.UTF-8
+    export LC_ALL=en_US.UTF-8
+    export TERM="xterm-256color"
+    echo "Oh-My-Zsh AGNOSTER has been installed!"
 else
-    echo "Oh My Zsh is already installed. Skipping installation."
+    echo "Oh-My-Zsh is already installed. Skipping installation."
 fi
 
 echo ""
-
 echo "--------------------------------------------------------"
 echo " Step 3: Set defaults"
 echo "--------------------------------------------------------"
 
-echo "set zsh as default shell"
+echo "Starting ZSH Defaults setup..."
+echo "Set zsh as default shell"
 # shellcheck disable=SC2046
-chsh -s $(which zsh) $USER
+chsh -s $(which zsh)
+
 # Define paths
-ZSHRC_SOURCE="/root/.zshrc"
-ZSHRC_PERSISTED="/home/.zshrc"
+ZSHRC_TARGET="/home/.zshrc"
 
-echo "Starting Zsh configuration setup..."
-
-# Step 1: Backup existing ~/.zshrc to /home/.zshrc
-# TODO:
-if [ -f "$ZSHRC_SOURCE" ]; then
-    echo "Backing up existing ~/.zshrc to /home/.zshrc..."
-#    cp "$ZSHRC_SOURCE" "$ZSHRC_PERSISTED"
-else
-    echo "No existing ~/.zshrc found. Creating a new /home/.zshrc..."
-#    touch "$ZSHRC_PERSISTED"
-fi
 
 # Step 2: Add default configuration to /home/.zshrc
-echo "Adding default configurations to /home/.zshrc..."
-cat <<EOL >> "$ZSHRC_PERSISTED"
+echo "Add default configurations to /home/.zshrc..."
+cat <<EOL >> "$ZSHRC_TARGET"
 
 # Default directory for Azure Web App
+export PATH=$HOME/bin:$HOME/.local/bin:/usr/local/bin:$PATH
+export ZSH="$HOME/.oh-my-zsh"
+ZSH_THEME="agnoster"
+plugins=(git)
+source $ZSH/oh-my-zsh.sh
+
 cd /home/site/wwwroot
 
 # Zsh history configuration
@@ -71,18 +81,18 @@ export HISTFILE=/home/.zsh_history
 export HISTSIZE=10000
 export SAVEHIST=10000
 
-# Git pull alias
-alias gitpull='cd /home/site/wwwroot && git pull origin main  && echo "Git pull complete!"'
+# Aliases
+alias project='cd /home/site/wwwroot'
+alias gpm='cd /home/site/wwwroot && git pull origin main  && echo "Git pull complete!"'
+alias art='/usr/local/bin/php /home/site/wwwroot/artisan'
+alias tinker='/usr/local/bin/php /home/site/wwwroot/artisan tinker'
 EOL
 
-# TODO:
-# Step 3: Replace ~/.zshrc with sourcing /home/.zshrc
-#echo "Replacing ~/.zshrc to source /home/.zshrc..."
-#echo 'source /home/.zshrc' > "$ZSHRC_SOURCE"
-
-# Step 4: Reload Zsh configuration
-#echo "Reloading Zsh configuration..."
-#source "$ZSHRC_SOURCE"
+echo "Source /home/.zshrc configuration..."
+source "/home/.zshrc"
 
 echo "Zsh configuration setup complete!"
-echo "======================================================== END"
+echo "========================================================"
+echo "END"
+echo "========================================================"
+echo ""
