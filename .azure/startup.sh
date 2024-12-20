@@ -74,4 +74,10 @@ echo ""
 bash /home/site/wwwroot/.azure/database-setup.sh
 bash /home/site/wwwroot/.azure/laravel-setup.sh
 
+echo ""
+echo ""
+echo "========================================================"
+echo "INSTALL DONE"
+echo "========================================================"
+echo ""
 zsh
