@@ -28,26 +28,48 @@ echo "--------------------------------------------------------"
 echo " Step 2: Checking Oh My Zsh Installation"
 echo "--------------------------------------------------------"
 
+# Check if Oh My Zsh is installed
 if [ ! -d "$HOME/.oh-my-zsh" ]; then
     echo "Oh My Zsh is not installed."
     echo "Installing Oh My Zsh..."
     yes | sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
-    echo "Installing fonts-powerline..."
-    apt install -y fonts-powerline
-    echo "Installing locales..."
-    apt install -y locales
-    echo "Installing dialog..."
-    apt install -y dialog
-    echo "Generating locale en ..."
-    locale-gen en_US.UTF-8
-    echo "Exporting LANG, LC_CALL, TERM..."
-    export LANG=en_US.UTF-8
-    export LC_ALL=en_US.UTF-8
-    export TERM="xterm-256color"
-    echo "Oh-My-Zsh AGNOSTER has been installed!"
 else
-    echo "Oh-My-Zsh is already installed. Skipping installation."
+    echo "Oh My Zsh is already installed. Skipping installation."
 fi
+
+# Check if fonts-powerline is installed
+if ! dpkg -l | grep -q fonts-powerline; then
+    echo "Installing fonts-powerline..."
+    sudo apt update && sudo apt install -y fonts-powerline
+else
+    echo "fonts-powerline is already installed. Skipping installation."
+fi
+
+# Check if locales package is installed
+if ! dpkg -l | grep -q locales; then
+    echo "Installing locales..."
+    sudo apt install -y locales
+    echo "Generating locale en_US.UTF-8..."
+    sudo locale-gen en_US.UTF-8
+else
+    echo "Locales package is already installed. Skipping installation."
+fi
+
+# Check if dialog is installed
+if ! dpkg -l | grep -q dialog; then
+    echo "Installing dialog..."
+    sudo apt install -y dialog
+else
+    echo "Dialog is already installed. Skipping installation."
+fi
+
+# Ensure locale and terminal settings
+echo "Exporting LANG, LC_ALL, TERM..."
+export LANG=en_US.UTF-8
+export LC_ALL=en_US.UTF-8
+export TERM="xterm-256color"
+
+echo "Oh-My-Zsh AGNOSTER setup is complete!"
 
 echo ""
 echo "--------------------------------------------------------"
