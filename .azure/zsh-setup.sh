@@ -9,9 +9,6 @@ echo "- This script ensures Zsh (a powerful shell) and"
 echo "  Oh My Zsh (a popular framework for Zsh) are installed."
 echo "- It first checks for existing installations to avoid"
 echo "  unnecessary re-installation."
-echo "========================================================"
-
-echo ""
 echo "--------------------------------------------------------"
 echo " Step 1: Checking Zsh Installation"
 echo "--------------------------------------------------------"
@@ -25,7 +22,7 @@ else
     echo "Zsh is already installed. Skipping installation."
 fi
 echo "--------------------------------------------------------"
-echo " Step 2: Checking Oh My Zsh Installation"
+echo " Step 2: Checking Oh-My-Zsh Installation"
 echo "--------------------------------------------------------"
 
 # Check if Oh My Zsh is installed
@@ -40,7 +37,7 @@ fi
 # Check if fonts-powerline is installed
 if ! dpkg -l | grep -q fonts-powerline; then
     echo "Installing fonts-powerline..."
-    sudo apt update && sudo apt install -y fonts-powerline
+    apt install -y fonts-powerline
 else
     echo "fonts-powerline is already installed. Skipping installation."
 fi
@@ -48,9 +45,9 @@ fi
 # Check if locales package is installed
 if ! dpkg -l | grep -q locales; then
     echo "Installing locales..."
-    sudo apt install -y locales
+    apt install -y locales
     echo "Generating locale en_US.UTF-8..."
-    sudo locale-gen en_US.UTF-8
+    locale-gen en_US.UTF-8
 else
     echo "Locales package is already installed. Skipping installation."
 fi
@@ -58,7 +55,7 @@ fi
 # Check if dialog is installed
 if ! dpkg -l | grep -q dialog; then
     echo "Installing dialog..."
-    sudo apt install -y dialog
+    apt install -y dialog
 else
     echo "Dialog is already installed. Skipping installation."
 fi
