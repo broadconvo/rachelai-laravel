@@ -43,11 +43,8 @@ class EmailAgentController extends Controller
         $existingFilter = EmailFilter::where('user_id', $user->id)->first();
 
         EmailFilter::updateOrCreate(
-            ['id' => $existingFilter->id],
-            [
-                'user_id' => $user->id,
-                'filters' => request('filter')
-            ]
+            ['user_id' => $user->id],
+            ['filters' => request('filter')]
         );
 
         return response()->json([
