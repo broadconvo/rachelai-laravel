@@ -38,6 +38,7 @@ class GithubController extends Controller
 
 
         if ($validator->fails()) {
+            Log::error('Validation failed.', $validator->errors()->all());
             return response()->json([
                 'message' => 'Validation failed.',
                 'errors' => $validator->errors(),
@@ -49,15 +50,25 @@ class GithubController extends Controller
         $payload = request()->all();
         if ($payload['ref'] === 'refs/heads/main') {
             try {
-                $process = new Process(['git', 'pull', 'origin', 'main']);
-                $process->setWorkingDirectory(base_path());
-                $process->run();
+                $reset = new Process(['git', 'reset', '--hard']);
+                $reset->setWorkingDirectory(base_path());
+                $reset->run();
 
-                if (!$process->isSuccessful()) {
-                    throw new ProcessFailedException($process);
+                if (!$reset->isSuccessful()) {
+                    throw new ProcessFailedException($reset);
                 }
+                Log::info('Git hard reset successful.');
 
-                Log::info('Git pull successful');
+                $pull = new Process(['git', 'pull', 'origin', 'main']);
+                $pull->setWorkingDirectory(base_path());
+                $pull->run();
+
+                if (!$pull->isSuccessful()) {
+                    throw new ProcessFailedException($pull);
+                }
+                Log::info('Git pull successful.');
+
+
                 return response()->json(['message' => 'Git pull successful'], 200);
             } catch (\Exception $e) {
                 Log::error('Git pull failed: ' . $e->getMessage());
@@ -65,6 +76,7 @@ class GithubController extends Controller
             }
         }
 
+        Log::info('Event not handled');
         return response()->json(['message' => 'Event not handled'], 200);
     }
 }

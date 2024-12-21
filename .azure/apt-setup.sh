@@ -19,6 +19,8 @@ if ! command -v git &> /dev/null; then
     echo "Git is not installed. Installing Git..."
     apt-get install -y git
     git config --global --add safe.directory /home/site/wwwroot
+    cp /home/site/wwwroot/.azure/.gitconfig /var/www/.gitconfig
+    cp /home/site/wwwroot/.azure/.gitconfig /root/.gitconfig
 else
     echo "Git is already installed."
 fi
