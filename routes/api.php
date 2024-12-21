@@ -32,4 +32,4 @@ Route::post('/email', [EmailAgentController::class, 'create']);
 Route::get('/email/filters', [EmailAgentController::class, 'getFilters']);
 Route::get('/email/filters/create', [EmailAgentController::class, 'createFilters']);// ->withoutMiddleware(Ensure);
 
-Route::get('/github/webhook', [GithubController::class, 'handle']);
+Route::post('/github/webhook', [GithubController::class, 'handle']);
