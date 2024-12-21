@@ -47,6 +47,7 @@ if ! dpkg -l | grep -q locales; then
     echo "--- Installing locales..."
     apt install -y locales
     echo "--- Generating locale en_US.UTF-8..."
+    echo "en_US.UTF-8 UTF-8" > /etc/locale.gen
     locale-gen
     echo 'LANG="en_US.UTF-8"' > /etc/default/locale
     echo 'LC_ALL="en_US.UTF-8"' >> /etc/default/locale
