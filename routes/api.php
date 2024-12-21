@@ -3,6 +3,7 @@
 use App\Http\Controllers\EmailAgentController;
 use App\Http\Controllers\GithubController;
 use App\Http\Controllers\GmailController;
+use App\Http\Middleware\ForceJsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -32,4 +33,4 @@ Route::post('/email', [EmailAgentController::class, 'create']);
 Route::get('/email/filters', [EmailAgentController::class, 'getFilters']);
 Route::get('/email/filters/create', [EmailAgentController::class, 'createFilters']);// ->withoutMiddleware(Ensure);
 
-Route::post('/github/webhook', [GithubController::class, 'handle']);
+Route::post('/github/webhook', [GithubController::class, 'handle'])->middleware(ForceJsonResponse::class);
