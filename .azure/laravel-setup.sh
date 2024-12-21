@@ -9,16 +9,16 @@ echo " clearing and caching Laravel components, handling Google"
 echo " API credentials, and restarting Laravel workers."
 echo "--------------------------------------------------------"
 
-echo "Shutting down Laravel"
+echo "--- Shutting down Laravel"
 php /home/site/wwwroot/artisan down --refresh=15 --secret="$APP_SECRET"
 
-echo "Copying google client"
+echo "--- Copying google client"
 # Path to the file
 FILE="/home/site/wwwroot/storage/app/google-api/client_secret.json"
 
 # Check if the file exists
 if [ -f "$FILE" ]; then
-    echo "File $FILE already exists."
+    echo "--- File $FILE already exists."
 else
     # Transform into valid JSON using sed
     fixed_json=$(echo "$GOOGLE_CREDENTIALS" | sed -E '
@@ -31,37 +31,41 @@ else
         s/,[ ]*\]/]/g;                                 # Clean up trailing commas in arrays
     ')
 
-    echo "File $FILE does not exist. Creating it..."
+    echo "--- File $FILE does not exist. Creating it..."
     # Create the file and add default content if needed
     mkdir -p "$(dirname "$FILE")"  # Ensure the parent directory exists
     touch "$FILE"                 # Create the file
     echo "{}" > "$FILE"           # Add default JSON content (optional)
-    echo "File $FILE has been created."
+    echo "--- File $FILE has been created."
 
     # Write the output to a file
     echo "$fixed_json" > $FILE
 
     # Output to console
-    echo "Fixed JSON written to $FILE"
+    echo "--- Fixed JSON written to $FILE"
 fi
 
 
 #echo "Migrating database"
 #php /home/site/wwwroot/artisan migrate --force
 
-echo "Clearing cache"
+echo "--- Clearing cache"
 php /home/site/wwwroot/artisan cache:clear
+
+echo "--- Clearing config"
+php /home/site/wwwroot/artisan config:clear
 
 #echo "Clearing expired password reset tokens"
 #php /home/site/wwwroot/artisan auth:clear-resets
 
-echo "Clearing and caching routes"
+echo "--- Clearing and caching routes"
 php /home/site/wwwroot/artisan route:cache
 
-echo "Clearing and caching config"
-php /home/site/wwwroot/artisan config:cache
+# this makes me unread the values from the .env file
+#echo "Clearing and caching config"
+#php /home/site/wwwroot/artisan config:cache
 
-echo "Clearing and caching views"
+echo "--- Clearing and caching views"
 php /home/site/wwwroot/artisan view:cache
 
 # Install node modules
@@ -72,10 +76,10 @@ php /home/site/wwwroot/artisan view:cache
 #echo "Building assets"
 # npm run production --silent
 
-echo "Linking storage"
+echo "--- Linking storage"
 php /home/site/wwwroot/artisan storage:link
 
-echo "Turning on Laravel"
+echo "--- Turning on Laravel"
 php /home/site/wwwroot/artisan up
 echo "--------------------------------------------------------"
 echo "END"
