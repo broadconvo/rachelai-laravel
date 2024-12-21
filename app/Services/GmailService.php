@@ -32,7 +32,7 @@ class GmailService
             ->users_messages
             ->listUsersMessages('me',
                 [
-                    'q' => 'is:unread in:inbox '.$filters,
+                    'q' => 'is:unread in:inbox to:'.$filters,
                     'maxResults' => 10
                 ]);
         $messages = [];
