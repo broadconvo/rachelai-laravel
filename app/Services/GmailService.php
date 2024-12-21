@@ -25,11 +25,14 @@ class GmailService
 
         $filters = auth()->user()?->emailFilters()->first()?->filters ?? '';
 
+        // TODO: filter should be the user's desired to: filter
+        // to:myuan@broadconvo.com
+        // User wants to only check for emails that goes to said filter
         $messagesResponse = $this->service
             ->users_messages
             ->listUsersMessages('me',
                 [
-                    'q' => 'is:unread in:inbox from:'.$filters,
+                    'q' => 'is:unread in:inbox '.$filters,
                     'maxResults' => 10
                 ]);
         $messages = [];
