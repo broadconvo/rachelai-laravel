@@ -36,36 +36,31 @@ fi
 
 # Check if fonts-powerline is installed
 if ! dpkg -l | grep -q fonts-powerline; then
-    echo "Installing fonts-powerline..."
+    echo "--- Installing fonts-powerline..."
     apt install -y fonts-powerline
 else
-    echo "fonts-powerline is already installed. Skipping installation."
+    echo "--- fonts-powerline is already installed. Skipping installation."
 fi
 
 # Check if locales package is installed
 if ! dpkg -l | grep -q locales; then
-    echo "Installing locales..."
+    echo "--- Installing locales..."
     apt install -y locales
-    echo "Generating locale en_US.UTF-8..."
-    locale-gen en_US.UTF-8
+    echo "--- Generating locale en_US.UTF-8..."
+    locale-gen
+    echo 'LANG="en_US.UTF-8"' > /etc/default/locale
+    echo 'LC_ALL="en_US.UTF-8"' >> /etc/default/locale
 else
     echo "Locales package is already installed. Skipping installation."
 fi
-
-# Check if dialog is installed
-if ! dpkg -l | grep -q dialog; then
-    echo "Installing dialog..."
-    apt install -y dialog
-else
-    echo "Dialog is already installed. Skipping installation."
-fi
-
 # Ensure locale and terminal settings
+echo ""
 echo "Exporting LANG, LC_ALL, TERM..."
 export LANG=en_US.UTF-8
 export LC_ALL=en_US.UTF-8
 export TERM="xterm-256color"
 
+echo ""
 echo "Oh-My-Zsh AGNOSTER setup is complete!"
 
 echo ""
