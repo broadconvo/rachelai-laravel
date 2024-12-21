@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\EmailAgentController;
+use App\Http\Controllers\GithubController;
 use App\Http\Controllers\GmailController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -31,3 +32,4 @@ Route::post('/email', [EmailAgentController::class, 'create']);
 Route::get('/email/filters', [EmailAgentController::class, 'getFilters']);
 Route::get('/email/filters/create', [EmailAgentController::class, 'createFilters']);// ->withoutMiddleware(Ensure);
 
+Route::get('/webhook/github', [GithubController::class, 'handle']);
