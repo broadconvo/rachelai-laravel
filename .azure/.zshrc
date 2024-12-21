@@ -21,7 +21,7 @@ export SAVEHIST=10000
 
 # Aliases
 alias project='cd /home/site/wwwroot'
-alias gpm='cd /home/site/wwwroot && git pull origin main  && echo "Git pull complete!"'
+alias gpm='cd /home/site/wwwroot && git reset --hard && git pull origin main  && echo "Git pull complete!"'
 alias art='/usr/local/bin/php /home/site/wwwroot/artisan'
 alias tinker='/usr/local/bin/php /home/site/wwwroot/artisan tinker'
 
