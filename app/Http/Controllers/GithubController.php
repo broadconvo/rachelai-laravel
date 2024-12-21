@@ -11,6 +11,17 @@ class GithubController extends Controller
 {
     public function handle(): JsonResponse
     {
+        request()->validate([
+            'X-Hub-Signature-256' => [
+                    'required', function ($attribute, $value, $fail) {
+                        if (!request()->hasHeader($attribute)) {
+                            $fail("The {$attribute} header is missing.");
+                        }
+                    }
+                ],
+            ]);
+
+
         $secret = env('GITHUB_WEBHOOK_SECRET');
 
         // Validate the payload signature
