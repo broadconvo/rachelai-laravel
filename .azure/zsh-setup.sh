@@ -14,12 +14,12 @@ echo " Step 1: Checking Zsh Installation"
 echo "--------------------------------------------------------"
 
 if ! command -v zsh &> /dev/null; then
-    echo "Zsh is not installed. Installing Zsh..."
+    echo "--- Zsh is not installed. Installing Zsh..."
     apt update
     apt install -y zsh
-    echo "Zsh has been successfully installed!"
+    echo "--- Zsh has been successfully installed!"
 else
-    echo "Zsh is already installed. Skipping installation."
+    echo "--- Zsh is already installed. Skipping installation."
 fi
 echo "--------------------------------------------------------"
 echo " Step 2: Checking Oh-My-Zsh Installation"
@@ -27,11 +27,11 @@ echo "--------------------------------------------------------"
 
 # Check if Oh My Zsh is installed
 if [ ! -d "$HOME/.oh-my-zsh" ]; then
-    echo "Oh My Zsh is not installed."
-    echo "Installing Oh My Zsh..."
+    echo "--- Oh My Zsh is not installed."
+    echo "--- Installing Oh My Zsh..."
     yes | sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
 else
-    echo "Oh My Zsh is already installed. Skipping installation."
+    echo "--- Oh My Zsh is already installed. Skipping installation."
 fi
 
 # Check if fonts-powerline is installed
@@ -51,37 +51,37 @@ if ! dpkg -l | grep -q locales; then
     echo 'LANG="en_US.UTF-8"' > /etc/default/locale
     echo 'LC_ALL="en_US.UTF-8"' >> /etc/default/locale
 else
-    echo "Locales package is already installed. Skipping installation."
+    echo "--- Locales package is already installed. Skipping installation."
 fi
 # Ensure locale and terminal settings
 echo ""
-echo "Exporting LANG, LC_ALL, TERM..."
+echo "--- Exporting LANG, LC_ALL, TERM..."
 export LANG=en_US.UTF-8
 export LC_ALL=en_US.UTF-8
 export TERM="xterm-256color"
 
 echo ""
-echo "Oh-My-Zsh AGNOSTER setup is complete!"
+echo "--- Oh-My-Zsh AGNOSTER setup is complete!"
 
 echo ""
 echo "--------------------------------------------------------"
 echo " Step 3: Set defaults"
 echo "--------------------------------------------------------"
 
-echo "Starting ZSH Defaults setup..."
-echo "Set zsh as default shell"
+echo "--- Starting ZSH Defaults setup..."
+echo "--- Set zsh as default shell"
 # shellcheck disable=SC2046
 chsh -s $(which zsh)
 
 # Step 2: Add default configuration to /home/.zshrc
-echo "Copy own .zshrc to /root/.zshrc..."
+echo "--- Copy own .zshrc to /root/.zshrc..."
 cp /home/site/wwwroot/.azure/.zshrc /root/.zshrc
 
-echo "Source /root/.zshrc configuration..."
+echo "--- Source /root/.zshrc configuration..."
 zsh /home/install/zsh-source.sh
 
 echo ""
-echo "Zsh configuration setup complete!"
+echo "--- Zsh configuration setup complete!"
 echo "--------------------------------------------------------"
 echo "END"
 echo "========================================================"
