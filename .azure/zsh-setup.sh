@@ -53,12 +53,6 @@ if ! dpkg -l | grep -q locales; then
 else
     echo "--- Locales package is already installed. Skipping installation."
 fi
-# Ensure locale and terminal settings
-echo ""
-echo "--- Exporting LANG, LC_ALL, TERM..."
-export LANG=en_US.UTF-8
-export LC_ALL=en_US.UTF-8
-export TERM="xterm-256color"
 
 echo ""
 echo "--- Oh-My-Zsh AGNOSTER setup is complete!"

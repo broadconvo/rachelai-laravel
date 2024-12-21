@@ -9,6 +9,12 @@ source $ZSH/oh-my-zsh.sh
 
 cd /home/site/wwwroot
 
+# Ensure locale and terminal settings
+echo "--- Exporting LANG, LC_ALL, TERM..."
+export LANG=en_US.UTF-8
+export LC_ALL=en_US.UTF-8
+export TERM="xterm-256color"
+
 # Zsh history configuration
 export HISTFILE=/home/.zsh_history
 export HISTSIZE=10000
