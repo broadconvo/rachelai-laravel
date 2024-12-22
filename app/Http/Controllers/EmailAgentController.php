@@ -55,6 +55,12 @@ class EmailAgentController extends Controller
     public function getFilters()
     {
         $user = User::where('email', request('email'))->first();
+        if(!$user) {
+            return response()->json([
+                'message' => 'User not found'
+            ]);
+        }
+
         $filter = EmailFilter::where('user_id', $user->id)->first();
 
         if(!$filter) {
