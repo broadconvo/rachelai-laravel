@@ -96,7 +96,7 @@ return [
             'search_path' => 'public',
             'sslmode' => 'prefer',
             'options' => [
-                PDO::ATTR_PERSISTENT => false,
+                PDO::ATTR_PERSISTENT => false, // Ensure persistent connections are disabled
             ],
         ],
 
