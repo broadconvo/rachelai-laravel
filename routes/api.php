@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Auth\ApiAuthController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\Broadconvo\PhoneExtensionController;
 use App\Http\Controllers\Broadconvo\UserController as BroadconvoUserController;
@@ -7,12 +8,17 @@ use App\Http\Controllers\EmailAgentController;
 use App\Http\Controllers\GithubController;
 use App\Http\Controllers\GmailController;
 use App\Http\Middleware\ForceJsonResponse;
-use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
+Route::post('/login', [ApiAuthController::class, 'login']);
 
-Route::middleware(['auth:sanctum'])->get('/user', function (Request $request) {
-    return $request->user();
+
+Route::middleware(['auth:sanctum'])->group(function () {
+
+    Route::get('/user', [ApiAuthController::class, 'user']);
+
+    Route::post('/logout', [ApiAuthController::class, 'logout']);
 });
 
 Route::post('/register', [RegisteredUserController::class, 'store']);
