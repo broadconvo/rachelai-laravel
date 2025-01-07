@@ -6,7 +6,7 @@ use App\Models\Broadconvo\UserAgent;
 use Closure;
 use Illuminate\Contracts\Validation\ValidationRule;
 
-class ExtensionNotUsed implements ValidationRule
+class PhoneExtensionNotUsed implements ValidationRule
 {
     protected string $tenantId;
 

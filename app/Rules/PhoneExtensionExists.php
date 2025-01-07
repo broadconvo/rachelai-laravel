@@ -6,7 +6,7 @@ use App\Models\Broadconvo\PhoneExtension;
 use Closure;
 use Illuminate\Contracts\Validation\ValidationRule;
 
-class ExtensionExists implements ValidationRule
+class PhoneExtensionExists implements ValidationRule
 {
     /**
      * Run the validation rule.
