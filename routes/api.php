@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Auth\RegisteredUserController;
+use App\Http\Controllers\Broadconvo\PhoneExtensionController;
 use App\Http\Controllers\Broadconvo\UserController as BroadconvoUserController;
 use App\Http\Controllers\EmailAgentController;
 use App\Http\Controllers\GithubController;
@@ -40,5 +41,7 @@ Route::post('/github/webhook', [GithubController::class, 'handle'])->middleware(
 
 
 Route::prefix('broadconvo')->group(function() {
-    Route::get('', [BroadconvoUserController::class, 'index']);
+    Route::get('agents', [BroadconvoUserController::class, 'index']);
+
+    Route::get('phone-extensions', [PhoneExtensionController::class, 'available']);
 });
