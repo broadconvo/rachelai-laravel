@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Broadconvo\UserController as BroadconvoUserController;
 use App\Http\Controllers\EmailAgentController;
 use App\Http\Controllers\GithubController;
 use App\Http\Controllers\GmailController;
@@ -34,3 +35,8 @@ Route::get('/email/filters', [EmailAgentController::class, 'getFilters']);
 Route::get('/email/filters/create', [EmailAgentController::class, 'createFilters']);// ->withoutMiddleware(Ensure);
 
 Route::post('/github/webhook', [GithubController::class, 'handle'])->middleware(ForceJsonResponse::class);
+
+
+Route::prefix('broadconvo')->group(function() {
+    Route::get('', [BroadconvoUserController::class, 'index']);
+});
