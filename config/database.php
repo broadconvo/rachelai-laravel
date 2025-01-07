@@ -100,6 +100,24 @@ return [
             ],
         ],
 
+        'broadconvo' => [
+            'driver' => 'pgsql',
+            'url' => env('DB_BROADCONVO_URL'),
+            'host' => env('DB_BROADCONVO_HOST', '127.0.0.1'),
+            'port' => env('DB_BROADCONVO_PORT', '5432'),
+            'database' => env('DB_BROADCONVO_DATABASE', 'laravel'),
+            'username' => env('DB_BROADCONVO_USERNAME', 'root'),
+            'password' => env('DB_BROADCONVO_PASSWORD', ''),
+            'charset' => env('DB_BROADCONVO_CHARSET', 'utf8'),
+            'prefix' => '',
+            'prefix_indexes' => true,
+            'search_path' => 'public',
+            'sslmode' => 'prefer',
+            'options' => [
+                PDO::ATTR_PERSISTENT => false, // Ensure persistent connections are disabled
+            ],
+        ],
+
         'sqlsrv' => [
             'driver' => 'sqlsrv',
             'url' => env('DB_URL'),
