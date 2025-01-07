@@ -2,11 +2,11 @@
 
 namespace App\Rules;
 
-use App\Models\Broadconvo\PhoneExtension;
+use App\Models\Broadconvo\UserAgent;
 use Closure;
 use Illuminate\Contracts\Validation\ValidationRule;
 
-class UniqueExtensionNumber implements ValidationRule
+class ExtensionNotUsed implements ValidationRule
 {
     protected string $tenantId;
 
@@ -15,15 +15,19 @@ class UniqueExtensionNumber implements ValidationRule
         $this->tenantId = $tenantId;
     }
 
+    /**
+     * Run the validation rule.
+     *
+     * @param  \Closure(string, ?string=): \Illuminate\Translation\PotentiallyTranslatedString  $fail
+     */
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {
-        // Check if the extension_number exists for the given tenant_id
-        $exists = PhoneExtension::where('extension_number', $value)
+        $inUse = UserAgent::where('extension_number', $value)
             ->where('tenant_id', $this->tenantId)
             ->exists();
 
-        if ($exists) {
-            $fail('The :attribute is already taken for this tenant.');
+        if ($inUse) {
+            $fail("The {$attribute} is already in use by a another agent.");
         }
     }
 }

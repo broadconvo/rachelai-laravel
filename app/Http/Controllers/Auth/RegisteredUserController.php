@@ -7,7 +7,9 @@ use App\Models\Broadconvo\PhoneExtension;
 use App\Models\Broadconvo\UserAgent;
 use App\Models\Broadconvo\UserMaster;
 use App\Models\User;
-use App\Rules\UniqueExtensionNumber;
+use App\Rules\ExtensionExists;
+use App\Rules\ExtensionNotUsed;
+use App\Rules\ExtensionUnique;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -36,7 +38,8 @@ class RegisteredUserController extends Controller
             'tenant_id' => ['required', 'string', 'max:255'],
             'extension_number' => [
                 'required', 'string', 'max:255',
-                new UniqueExtensionNumber($request->tenant_id)
+                new ExtensionExists(),
+                new ExtensionNotUsed($request->tenant_id)
             ],
             'picture_url' => ['url', 'string'],
         ]);
@@ -64,20 +67,12 @@ class RegisteredUserController extends Controller
                     'added_on' => now(),
                 ]);
 
-                $phoneExtension = PhoneExtension::create([
-                    'extension_number' => $request->extension_number,
-                    'extension_pwd' => config('broadconvo.extension.password'),
-                    'extension_type'=> 1, // current values: 1, 2, 3
-                    'tenant_id' => $request->tenant_id,
-                    'for_queue' => true,
-                ]);
-
                 // Create the UserAgent instance
                 $broadconvoUserAgent = new UserAgent([
                     'time_zone' => config('app.timezone'),
                     'tenant_id' => $request->tenant_id,
                     'agent_role' => $request->role,
-                    'extension_number' => $phoneExtension->extension_number,
+                    'extension_number' => $request->extension_number,
                     'added_on' => now(),
                 ]);
 
