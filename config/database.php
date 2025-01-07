@@ -109,9 +109,9 @@ return [
             'username' => env('DB_BROADCONVO_USERNAME', 'root'),
             'password' => env('DB_BROADCONVO_PASSWORD', ''),
             'charset' => env('DB_BROADCONVO_CHARSET', 'utf8'),
+            'search_path' => env('DB_BROADCONVO_SCHEMA', 'balch'),
             'prefix' => '',
             'prefix_indexes' => true,
-            'search_path' => 'public',
             'sslmode' => 'prefer',
             'options' => [
                 PDO::ATTR_PERSISTENT => false, // Ensure persistent connections are disabled
