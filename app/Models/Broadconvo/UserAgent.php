@@ -8,7 +8,7 @@ class UserAgent extends Model
 {
     protected $connection = 'broadconvo';
 
-    protected $table = 'balch.user_agent';
+    protected $table = 'user_agent';
 
     protected $primaryKey = 'agent_id';
 

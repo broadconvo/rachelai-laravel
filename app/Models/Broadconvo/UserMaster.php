@@ -9,7 +9,7 @@ class UserMaster extends Model
 {
     protected $connection = 'broadconvo';
 
-    protected $table = 'balch.user_master';
+    protected $table = 'user_master';
     protected $primaryKey = 'master_id';
 
     public $timestamps = false;
