@@ -3,15 +3,18 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Models\Broadconvo\PhoneExtension;
 use App\Models\Broadconvo\UserAgent;
 use App\Models\Broadconvo\UserMaster;
 use App\Models\User;
+use App\Rules\UniqueExtensionNumber;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules;
 
 class RegisteredUserController extends Controller
@@ -31,7 +34,10 @@ class RegisteredUserController extends Controller
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
             'role' => ['required', 'string', 'max:255', 'in:supervisor,manager,agent'],
             'tenant_id' => ['required', 'string', 'max:255'],
-            'extension_number' => ['required', 'string', 'max:255'],
+            'extension_number' => [
+                'required', 'string', 'max:255',
+                new UniqueExtensionNumber($request->tenant_id)
+            ],
             'picture_url' => ['url', 'string'],
         ]);
 
@@ -58,12 +64,20 @@ class RegisteredUserController extends Controller
                     'added_on' => now(),
                 ]);
 
+                $phoneExtension = PhoneExtension::create([
+                    'extension_number' => $request->extension_number,
+                    'extension_pwd' => config('broadconvo.extension.password'),
+                    'extension_type'=> 1, // current values: 1, 2, 3
+                    'tenant_id' => $request->tenant_id,
+                    'for_queue' => true,
+                ]);
+
                 // Create the UserAgent instance
                 $broadconvoUserAgent = new UserAgent([
-                    'time_zone' => 'Asia/Hong_Kong',
+                    'time_zone' => config('app.timezone'),
                     'tenant_id' => $request->tenant_id,
                     'agent_role' => $request->role,
-                    'extension_number' => $request->extension_number,
+                    'extension_number' => $phoneExtension->extension_number,
                     'added_on' => now(),
                 ]);
 
