@@ -8,11 +8,27 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 class UserMaster extends Model
 {
     protected $connection = 'broadconvo';
+
     protected $table = 'balch.user_master';
     protected $primaryKey = 'master_id';
+
+    public $timestamps = false;
+
     protected $keyType = 'string';
 
-    public $timestamps = ['added_on'];
+    protected $guarded = [];
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($model) {
+            // Automatically generate the master_id if not already set
+            if (empty($model->master_id)) {
+                $model->master_id = str()->uuid();
+            }
+        });
+    }
 
     public function userAgent(): HasOne
     {
