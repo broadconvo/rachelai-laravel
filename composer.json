@@ -9,16 +9,18 @@
     ],
     "license": "MIT",
     "require": {
-        "google/apiclient-services": "^0.386",
         "php": "^8.2",
+        "ext-pdo": "*",
         "ext-pdo_pgsql": "*",
+        "google/apiclient-services": "^0.386",
+        "hkulekci/qdrant": "^0.5.8",
         "laravel/framework": "^11.31",
         "laravel/sanctum": "^4.0",
         "laravel/socialite": "^5.16",
         "laravel/tinker": "^2.9",
+        "openai-php/laravel": "^0.10.2",
         "tomshaw/google-api": "^0.6.2",
-        "use-the-fork/synapse": "^0.2.0",
-	    "ext-pdo": "*"
+        "use-the-fork/synapse": "^0.2.0"
     },
     "require-dev": {
         "fakerphp/faker": "^1.23",
