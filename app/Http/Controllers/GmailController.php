@@ -26,7 +26,7 @@ class GmailController extends Controller
         $state = base64_encode($phoneNumbers);
 
         $targetUrl = Socialite::with('google')
-            ->with(['access_type' => 'offline', 'prompt' => 'consent select_account', 'state'=>$state])
+            ->with(['access_type' => 'offline', 'state'=>$state])
             ->scopes($scopes)
             ->stateless()
             ->redirect()
@@ -36,6 +36,10 @@ class GmailController extends Controller
 
     public function index(GoogleClient $client)
     {
+        // check if request has error query
+        if (request()->has('error')) {
+            return response()->json(['error' => request('error')]);
+        }
         $phoneNumbers = base64_decode(request('state'));
 
         // Regular expression to extract all numbers and flatten
@@ -115,5 +119,15 @@ class GmailController extends Controller
         $response = $gmailService->watchGmail();
 
         return response()->json($response);
+    }
+
+    public function sentItems()
+    {
+        auth()->loginUsingId(3);
+
+        $gmailService = new GmailService(app(GoogleClient::class));
+        $messages = $gmailService->getSentItems();
+
+        return response()->json($messages);
     }
 }

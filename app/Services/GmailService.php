@@ -44,6 +44,26 @@ class GmailService
         return $messages;
     }
 
+    public function getSentItems()
+    {
+        // TODO: i need subject, from, to, date, message-id, body
+        // get the email from the sender attribute:
+        //  Ground Breaker <groundbreaker08@gmail.com>
+
+        $messagesResponse = $this->service
+            ->users_messages
+            ->listUsersMessages('me',
+                [
+                    'q' => 'is:sent',
+                ]);
+        $messages = [];
+
+        foreach ($messagesResponse->getMessages() as $message) {
+            $messages[] = $this->getMessageDetails($message->getId());
+        }
+
+        return $messages;
+    }
     /**
      * Get the details of a single message.
      */

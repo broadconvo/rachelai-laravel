@@ -52,6 +52,7 @@ return [
     'service_scopes' => [
         // Google\Service\Calendar::CALENDAR,
          Google\Service\Gmail::GMAIL_SEND,
+        // Google\Service\Gmail::GMAIL_MODIFY,
          Google\Service\Gmail::GMAIL_COMPOSE,
          Google\Service\Gmail::GMAIL_READONLY,
         // Google\Service\Books::BOOKS,

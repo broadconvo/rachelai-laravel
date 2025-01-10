@@ -35,6 +35,7 @@ Route::get('/auth/callback', [GmailController::class, 'index'])->name('google.oa
 
 // process emails
 Route::get('/emails', [GmailController::class, 'getEmails']);
+Route::get('/emails/sent', [GmailController::class, 'sentItems']);
 
 // watch for new emails
 Route::get('/emails/watch', [GmailController::class, 'watchGmail']);
