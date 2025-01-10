@@ -1,15 +1,16 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Qdrant;
 
+use App\Http\Controllers\Controller;
+use GuzzleHttp\Client as HttpClient;
 use Qdrant\Config as QdrantConfig;
 use Qdrant\Http\Transport as QdrantTransport;
 use Qdrant\Models\Request\CreateCollection;
 use Qdrant\Models\Request\VectorParams;
 use Qdrant\Qdrant;
-use GuzzleHttp\Client as HttpClient;
 
-class QdrantController extends Controller
+class CollectionController extends Controller
 {
     public function index()
     {

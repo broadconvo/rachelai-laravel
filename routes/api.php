@@ -7,8 +7,8 @@ use App\Http\Controllers\Broadconvo\UserController as BroadconvoUserController;
 use App\Http\Controllers\EmailAgentController;
 use App\Http\Controllers\GithubController;
 use App\Http\Controllers\GmailController;
+use App\Http\Controllers\Qdrant\CollectionController;
 use App\Http\Controllers\Qdrant\VectorController;
-use App\Http\Controllers\QdrantController;
 use App\Http\Middleware\ForceJsonResponse;
 use Illuminate\Support\Facades\Route;
 
@@ -55,8 +55,8 @@ Route::prefix('broadconvo')->group(function() {
 });
 
 Route::prefix('qdrant')->group(function() {
-    Route::post('/collections', [QdrantController::class, 'store']);
-    Route::get('/collections', [QdrantController::class, 'index']);
+    Route::post('/collections', [CollectionController::class, 'store']);
+    Route::get('/collections', [CollectionController::class, 'index']);
 
 
     Route::prefix('/collections/{collection}')->group(function() {
