@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Models\Broadconvo\UserMaster;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -40,6 +41,10 @@ class ApiAuthController extends Controller
     }
 
     public function user() {
-        return response()->json(Auth::user());
+        $user = UserMaster::with('userAgent')
+            ->whereEmail(Auth::user()->email)
+            ->first();
+
+        return response()->json($user);
     }
 }
