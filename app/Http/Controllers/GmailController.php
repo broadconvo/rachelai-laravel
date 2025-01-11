@@ -56,7 +56,7 @@ class GmailController extends Controller
             [
                 'name' => $oauthUser->name,
                 'phone_number' => $cleanedNumbers,
-                'password' => bcrypt('password'),
+                // 'password' => bcrypt('password'),
             ]
         );
 

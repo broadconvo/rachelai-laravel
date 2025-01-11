@@ -6,5 +6,5 @@ use Illuminate\Database\Eloquent\Model;
 
 class EmailFilter extends Model
 {
-    protected $fillable = ['user_id', 'filters'];
+    protected $fillable = ['user_id', 'operator', 'value'];
 }
