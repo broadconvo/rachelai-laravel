@@ -9,6 +9,7 @@ use App\Enums\GmailSearchOperator;
 use App\Models\EmailFilter;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Validation\Rule;
 
 class EmailAgentController extends Controller
@@ -95,16 +96,12 @@ class EmailAgentController extends Controller
             ]);
         }
 
-        $filter = EmailFilter::where('user_id', $user->id)->first();
-
-        if(!$filter) {
-            return response()->json([
-                'message' => 'No filter found'
-            ]);
+        if(!count($user->emailFilters)) {
+            return response(['message' => 'No filters found']);
         }
 
         return response()->json([
-            'filter' => $filter->filters
+            'data' => $user->emailFilters
         ]);
     }
 }
