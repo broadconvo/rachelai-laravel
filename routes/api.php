@@ -9,6 +9,7 @@ use App\Http\Controllers\GithubController;
 use App\Http\Controllers\GmailController;
 use App\Http\Controllers\Qdrant\CollectionController;
 use App\Http\Controllers\Qdrant\VectorController;
+use App\Http\Controllers\RachelAI\FaqController;
 use App\Http\Middleware\ForceJsonResponse;
 use Illuminate\Support\Facades\Route;
 
@@ -65,4 +66,8 @@ Route::prefix('qdrant')->group(function() {
         Route::post('/vectors', [VectorController::class, 'store']);
         Route::get('/vectors', [VectorController::class, 'index']);
     });
+});
+
+Route::prefix('rachel')->group(function() {
+    Route::get('/faq', [FaqController::class, 'generate']);
 });
