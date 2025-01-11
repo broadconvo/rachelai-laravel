@@ -58,7 +58,7 @@ class RegisteredUserController extends Controller
                 $broadconvoUserMaster = UserMaster::create([
                     'username' => $request->username,
                     'email' => $request->email,
-                    'pwd_hash' => $user->password,
+                    'pwd_hash' => crypt($request->string('password'), "$1$".md5(uniqid(rand(), true))),
                     'first_name' => $request->firstname,
                     'last_name' => $request->lastname,
                     'profile_pic_url' => $request->picture_url,
