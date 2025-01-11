@@ -55,4 +55,9 @@ class User extends Authenticatable
     {
         return $this->hasMany(EmailFilter::class);
     }
+
+    public function googleToken()
+    {
+        return $this->hasOne(GoogleToken::class);
+    }
 }

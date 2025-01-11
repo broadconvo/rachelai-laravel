@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Enums\GmailOperation;
 use App\Models\User;
 use Google\Client;
 use Google\Service\Gmail;
@@ -22,8 +23,16 @@ class GmailService
 
     public function getUserMessages()
     {
+        // NOTE: Only retrieves email filters that has operation: read_inbox
 
-        $filters = auth()->user()?->emailFilters()->first()?->filters ?? '';
+        $filters = auth()->user()
+            ->emailFilters()
+            ->whereOperation(GmailOperation::READ_INBOX)
+            ->get();
+
+        $filters = $filters
+            ->map(fn($filter) => $filter->operator.':'.$filter->value)
+            ->implode(' ');
 
         // TODO: filter should be the user's desired to: filter
         // to:myuan@broadconvo.com
@@ -32,7 +41,7 @@ class GmailService
             ->users_messages
             ->listUsersMessages('me',
                 [
-                    'q' => 'is:unread in:inbox to:'.$filters,
+                    'q' => 'is:unread in:inbox '.$filters,
                     'maxResults' => 10
                 ]);
         $messages = [];
@@ -46,15 +55,27 @@ class GmailService
 
     public function getSentItems()
     {
+        // NOTE: Only retrieves email filters that has operation: read_sent
+
         // TODO: i need subject, from, to, date, message-id, body
         // get the email from the sender attribute:
         //  Ground Breaker <groundbreaker08@gmail.com>
+
+        // e.g: "from:some@example.com"
+        $filters = auth()->user()
+            ->emailFilters()
+            ->whereOperation(GmailOperation::READ_SENT)
+            ->get();
+
+        $filters = $filters
+            ->map(fn($filter) => $filter->operator.':'.$filter->value)
+            ->implode(' ');
 
         $messagesResponse = $this->service
             ->users_messages
             ->listUsersMessages('me',
                 [
-                    'q' => 'is:sent',
+                    'q' => 'is:sent '.$filters,
                 ]);
         $messages = [];
 
