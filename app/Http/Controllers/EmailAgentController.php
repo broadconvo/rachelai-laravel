@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Agents\EmailAgent;
 use App\Agents\TranslatorAgent;
+use App\Enums\GmailOperation;
 use App\Enums\GmailSearchOperator;
 use App\Models\EmailFilter;
 use App\Models\User;
@@ -51,31 +52,37 @@ class EmailAgentController extends Controller
                 'required',
                 Rule::in(GmailSearchOperator::listOperators()), // Validate operator against enum values
             ],
+            'operation' => [
+                'required',
+                Rule::in(GmailOperation::listOperations()), // Validate operator against enum values
+            ],
             'value' => [
                 'required', 'string',
                 Rule::unique('email_filters') // Ensure the combination is unique
                     ->where(function ($query) use ($user){
                         $user = User::where('email', request('email'))->first();
                         return $query
+                            ->where('operation', request('operation'))
                             ->where('user_id', $user ? $user->id : null)
                             ->where('operator', request('operator'));
                     }),
             ]
         ],
             [
-                'value.unique' => 'The filter combination of user, operator, and value already exists.',
+                'value.unique' => 'The filter combination of user, operator, value, operation already exists.',
             ]);
 
-        EmailFilter::updateOrCreate(
-            ['user_id' => $user->id],
+        EmailFilter::create(
             [
+                'user_id' => $user->id,
                 'operator' => request('operator'),
                 'value' => request('value'),
+                'operation' => request('operation'),
             ]
         );
 
         return response()->json([
-            'message' => 'Filter created successfully'
+            'message' => 'Successfully created Filter'
         ]);
     }
 

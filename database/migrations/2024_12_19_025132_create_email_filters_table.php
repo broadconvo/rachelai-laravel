@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\GmailOperation;
 use App\Enums\GmailSearchOperator;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
@@ -17,9 +18,13 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->enum('operator', GmailSearchOperator::class::listOperators());
             $table->string('value');
+            $table->enum('operation', GmailOperation::class::listOperations());
 
             // Add a composite unique key on 'user_id', 'operator', and 'value'
-            $table->unique(['user_id', 'operator', 'value'], 'email_filters_user_operator_value_unique');
+            $table->unique(
+                ['user_id', 'operator', 'value', 'operation'],
+                'email_filters_user_operator_value_operation_unique'
+            );
 
             $table->timestamps();
 
