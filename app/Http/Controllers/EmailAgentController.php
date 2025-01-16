@@ -57,23 +57,16 @@ class EmailAgentController extends Controller
                 'required',
                 Rule::in(GmailOperation::listOperations()), // Validate operator against enum values
             ],
-            'value' => [
-                'required', 'string',
-                Rule::unique('email_filters') // Ensure the combination is unique
-                    ->where(function ($query) use ($user){
-                        $user = User::where('email', request('email'))->first();
-                        return $query
-                            ->where('operation', request('operation'))
-                            ->where('user_id', $user ? $user->id : null)
-                            ->where('operator', request('operator'));
-                    }),
-            ]
+
         ],
             [
-                'value.unique' => 'The filter combination of user, operator, value, operation already exists.',
             ]);
 
-        EmailFilter::create(
+        EmailFilter::updateOrcreate(
+            [
+                'user_id' => $user->id,
+                'operation' => request('operation')
+            ],
             [
                 'user_id' => $user->id,
                 'operator' => request('operator'),
@@ -83,7 +76,7 @@ class EmailAgentController extends Controller
         );
 
         return response()->json([
-            'message' => 'Successfully created Filter'
+            'message' => 'Successfully created or updated the filter'
         ]);
     }
 
@@ -101,7 +94,7 @@ class EmailAgentController extends Controller
         }
 
         return response()->json([
-            'data' => $user->emailFilters
+            'data' => $user->emailFilters()->latest()->get()
         ]);
     }
 }
