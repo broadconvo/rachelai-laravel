@@ -8,6 +8,13 @@ use Illuminate\Contracts\Validation\ValidationRule;
 
 class PhoneExtensionExists implements ValidationRule
 {
+    protected string $tenantId;
+
+    public function __construct(string $tenantId)
+    {
+        $this->tenantId = $tenantId;
+    }
+
     /**
      * Run the validation rule.
      *
@@ -15,7 +22,9 @@ class PhoneExtensionExists implements ValidationRule
      */
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {
-        $exists = PhoneExtension::where('extension_number', $value)->exists();
+        $exists = PhoneExtension::whereTenantId($this->tenantId)
+            ->where('extension_number', $value)
+            ->exists();
 
         if (!$exists) {
             $fail("The {$attribute} does not exist.");

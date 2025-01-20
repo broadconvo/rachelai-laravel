@@ -8,13 +8,6 @@ use Illuminate\Contracts\Validation\ValidationRule;
 
 class PhoneExtensionNotUsed implements ValidationRule
 {
-    protected string $tenantId;
-
-    public function __construct(string $tenantId)
-    {
-        $this->tenantId = $tenantId;
-    }
-
     /**
      * Run the validation rule.
      *
@@ -23,7 +16,6 @@ class PhoneExtensionNotUsed implements ValidationRule
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {
         $inUse = UserAgent::where('extension_number', $value)
-            ->where('tenant_id', $this->tenantId)
             ->exists();
 
         if ($inUse) {
