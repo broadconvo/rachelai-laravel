@@ -38,8 +38,8 @@ class RegisteredUserController extends Controller
             'tenant_id' => ['required', 'string', 'max:255'],
             'extension_number' => [
                 'required', 'string', 'max:255',
-                new PhoneExtensionExists(),
-                new PhoneExtensionNotUsed($request->tenant_id)
+                new PhoneExtensionExists($request->tenant_id),
+                new PhoneExtensionNotUsed()
             ],
             'picture_url' => ['url', 'string'],
         ]);
