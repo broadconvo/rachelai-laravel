@@ -45,6 +45,7 @@ class EmailAgentController extends Controller
     {
         request()->validate([
             'email' => ['required', 'email', 'exists:users,email'],
+            'value' => ['required']
         ]);
 
         $user = User::where('email', request('email'))->first();
