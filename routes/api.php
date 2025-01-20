@@ -4,6 +4,7 @@ use App\Http\Controllers\Auth\ApiAuthController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\Broadconvo\CountryController;
 use App\Http\Controllers\Broadconvo\PhoneExtensionController;
+use App\Http\Controllers\Broadconvo\RachelController;
 use App\Http\Controllers\Broadconvo\TenantController;
 use App\Http\Controllers\Broadconvo\UserController as BroadconvoUserController;
 use App\Http\Controllers\EmailAgentController;
@@ -59,6 +60,8 @@ Route::prefix('broadconvo')->group(function() {
 
     Route::post('tenants', [TenantController::class, 'create']);
     Route::post('countries', [CountryController::class, 'create']);
+
+    Route::post('rachels', [RachelController::class, 'create']);
 });
 
 Route::prefix('qdrant')->group(function() {
