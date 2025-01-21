@@ -6,7 +6,9 @@ name: Build and deploy PHP app to Azure Web App - rachelai-laravel
 on:
   push:
     branches:
-      - main
+#      disabled workflow - this deploys in azure
+#      there is a github webhook that we will be using
+      - main_disabled
   workflow_dispatch:
 
 jobs:
