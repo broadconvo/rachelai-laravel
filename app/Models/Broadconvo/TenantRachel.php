@@ -4,6 +4,9 @@ namespace App\Models\Broadconvo;
 
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * Creates AI-agent for specific tenant
+ */
 class Rachel extends Model
 {
     protected $connection = 'broadconvo';
