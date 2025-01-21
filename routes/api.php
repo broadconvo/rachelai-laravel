@@ -37,18 +37,6 @@ Route::get('/auth/redirect', [GmailController::class, 'googleRedirect']);
 // callback from the provider
 Route::get('/auth/callback', [GmailController::class, 'index'])->name('google.oauth.callback');
 
-// process emails
-Route::get('/emails', [GmailController::class, 'getEmails']);
-Route::get('/emails/sent', [GmailController::class, 'sentItems']);
-
-// watch for new emails
-Route::get('/emails/watch', [GmailController::class, 'watchGmail']);
-
-
-Route::post('/email', [EmailAgentController::class, 'create']);
-Route::get('/email/filters', [EmailAgentController::class, 'getFilters']);
-Route::get('/email/filters/create', [EmailAgentController::class, 'createFilters']);// ->withoutMiddleware(Ensure);
-
 Route::post('/github/webhook', [GithubController::class, 'handle'])->middleware(ForceJsonResponse::class);
 
 // APIs for broadconvo database
@@ -85,5 +73,18 @@ Route::prefix('qdrant')->group(function() {
 
 // APIs of legacy rachelai
 Route::prefix('rachel')->group(function() {
+    // process emails
+    Route::get('/email-agent', [GmailController::class, 'getEmails']);
+    Route::get('/email-agent/sent', [GmailController::class, 'sentItems']);
+
+    // watch for new emails
+    Route::get('/email-agent/watch', [GmailController::class, 'watchGmail']);
+
+
+    Route::post('/email-agent', [EmailAgentController::class, 'create']);
+    Route::get('/email-agent/filters', [EmailAgentController::class, 'getFilters']);
+    Route::get('/email-agent/filters/create', [EmailAgentController::class, 'createFilters']);// ->withoutMiddleware(Ensure);
+    Route::get('/email-agent/google-status', [EmailAgentController::class, 'googleStatus']);
+
     Route::get('/faq', [FaqController::class, 'generate']);
 });

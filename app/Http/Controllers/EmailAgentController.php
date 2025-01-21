@@ -14,6 +14,21 @@ use Illuminate\Validation\Rule;
 
 class EmailAgentController extends Controller
 {
+    public function googleStatus()
+    {
+        request()->validate([
+            'email' => ['required', 'email', 'exists:users,email'],
+        ]);
+
+        $user = User::where('email', request('email'))->first();
+
+        $message = ['message' => 'Google account not yet connected', 'status' => false];
+        if($user->googleToken?->access_token) {
+            $message = ['message' => 'Your account is connected', 'status' => true];
+        }
+
+        return response()->json($message);
+    }
     /**
      * Create draft
      * @param  Request  $request
