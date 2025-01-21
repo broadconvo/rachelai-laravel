@@ -58,9 +58,14 @@ Route::prefix('broadconvo')->group(function() {
     Route::post('phone-extensions', [PhoneExtensionController::class, 'create']);
     Route::get('phone-extensions', [PhoneExtensionController::class, 'available']);
 
+    // should be able to automatically create rachel when creating a tenant
     Route::post('tenants', [TenantController::class, 'create']);
+    Route::get('tenants', [TenantController::class, 'index']);
+    Route::get('tenants/{tenant}', [TenantController::class, 'show']);
+
     Route::post('countries', [CountryController::class, 'create']);
 
+    // create rachel to your tenant
     Route::post('rachels', [RachelController::class, 'create']);
 });
 

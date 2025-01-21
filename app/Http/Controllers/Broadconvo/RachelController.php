@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Broadconvo;
 
 use App\Http\Controllers\Controller;
-use App\Models\Broadconvo\Rachel;
+use App\Models\Broadconvo\TenantRachel;
 use Illuminate\Http\Request;
 
 class RachelController extends Controller
@@ -19,7 +19,7 @@ class RachelController extends Controller
             'functions.*' => ['string', 'min:2', 'max:50']
         ]);
 
-        Rachel::create([
+        TenantRachel::create([
             'rachel_id' => str()->uuid(),
             'tenant_id' => request('tenant_id'),
             'rachel_label' => request('label'),
