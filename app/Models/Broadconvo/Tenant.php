@@ -29,4 +29,14 @@ class Tenant extends Model
     {
         return $this->hasOne(Country::class, 'country_id', 'country_id');
     }
+
+    public function userAgents(): HasMany
+    {
+        return $this->hasMany(UserAgent::class, 'agent_id', 'agent_id');
+    }
+
+    public function tenantRachels(): HasMany
+    {
+        return $this->hasMany(TenantRachel::class, 'tenant_id', 'tenant_id');
+    }
 }
