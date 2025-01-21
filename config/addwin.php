@@ -11,6 +11,7 @@ return [
     ],
     'rachel' => [
         'url' => [
+            'base' => $defaultUrl,
             'email' => env('RACHEL_EMAIL_QUERY', $defaultUrl.'/email/query'),
             'chat' => env('RACHEL_CHAT_QUERY', $defaultUrl.'/chat/query'),
             'voice' => [
