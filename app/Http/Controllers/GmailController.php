@@ -26,7 +26,7 @@ class GmailController extends Controller
         $state = base64_encode($phoneNumbers);
 
         $targetUrl = Socialite::with('google')
-            ->with(['access_type' => 'offline', 'state'=>$state])
+            ->with(['access_type' => 'offline', 'prompt' => 'consent select_account', 'state'=>$state])
             ->scopes($scopes)
             ->stateless()
             ->redirect()
@@ -73,7 +73,7 @@ class GmailController extends Controller
             ]
         );
 
-        return redirect(env('RACHEL_URL'));
+        return redirect(config('addwin.rachel.url.base'));
     }
 
     // should be authenticated
