@@ -51,7 +51,7 @@ Route::get('/email/filters/create', [EmailAgentController::class, 'createFilters
 
 Route::post('/github/webhook', [GithubController::class, 'handle'])->middleware(ForceJsonResponse::class);
 
-
+// APIs for broadconvo database
 Route::prefix('broadconvo')->group(function() {
     Route::get('agents', [BroadconvoUserController::class, 'index']);
 
@@ -69,6 +69,7 @@ Route::prefix('broadconvo')->group(function() {
     Route::post('rachels', [RachelController::class, 'create']);
 });
 
+// API for Qdrant
 Route::prefix('qdrant')->group(function() {
     Route::post('/collections', [CollectionController::class, 'store']);
     Route::get('/collections', [CollectionController::class, 'index']);
@@ -82,6 +83,7 @@ Route::prefix('qdrant')->group(function() {
     });
 });
 
+// APIs of legacy rachelai
 Route::prefix('rachel')->group(function() {
     Route::get('/faq', [FaqController::class, 'generate']);
 });
