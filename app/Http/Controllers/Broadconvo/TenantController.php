@@ -13,7 +13,7 @@ class TenantController extends Controller
 {
     public function index()
     {
-        $tenants = Tenant::with(['country', 'phones', 'userAgents'])->get();
+        $tenants = Tenant::with(['country', 'phones', 'masters.userAgent', 'rachels'])->get();
 
         return response()->json($tenants);
     }
@@ -87,7 +87,7 @@ class TenantController extends Controller
 
     public function show(Tenant $tenant)
     {
-        $tenant->load(['country', 'masters.userAgent', 'phones', 'rachels', 'knowledgebases']);
+        $tenant->load(['country', 'masters.userAgent', 'phones', 'rachels', 'knowledgebases.entries']);
 
         return response()->json($tenant);
     }
