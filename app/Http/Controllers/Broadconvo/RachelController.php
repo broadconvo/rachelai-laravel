@@ -30,4 +30,13 @@ class RachelController extends Controller
 
         return response()->json(['message' => 'Successfully created RachelAI']);
     }
+
+    public function show($rachelId)
+    {
+        $rachel = TenantRachel::with('knowledgebases')->whereRachelId($rachelId)->first();
+
+        return response()->json([
+            'data' => $rachel
+        ]);
+    }
 }

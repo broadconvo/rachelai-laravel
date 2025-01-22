@@ -3,6 +3,7 @@
 use App\Http\Controllers\Auth\ApiAuthController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\Broadconvo\CountryController;
+use App\Http\Controllers\Broadconvo\KnowledgebaseController;
 use App\Http\Controllers\Broadconvo\PhoneExtensionController;
 use App\Http\Controllers\Broadconvo\RachelController;
 use App\Http\Controllers\Broadconvo\TenantController;
@@ -55,6 +56,7 @@ Route::prefix('broadconvo')->group(function() {
 
     // create rachel to your tenant
     Route::post('rachels', [RachelController::class, 'create']);
+    Route::get('rachels/{rachel}', [RachelController::class, 'show']);
 });
 
 // API for Qdrant
