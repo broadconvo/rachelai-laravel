@@ -3,22 +3,27 @@
 namespace App\Services;
 
 use App\Enums\GmailOperation;
+use App\Models\GmailSentItem;
 use App\Models\User;
 use Google\Client;
 use Google\Service\Gmail;
 use Google\Service\Gmail\WatchRequest;
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Log;
 use TomShaw\GoogleApi\GoogleClient;
 use TomShaw\GoogleApi\Models\GoogleToken;
+use function Laravel\Prompts\error;
 
 class GmailService
 {
     protected Gmail $service;
-    protected GoogleClient $client;
+    protected Client $client;
 
-    public function __construct(GoogleClient $client)
+    public function __construct()
     {
-        $this->service = new Gmail($client());
-        $this->client = $client;
+        $this->client = app(Client::class);
+        $this->client->setAccessToken(auth()->user()->googleToken->access_token);
+        $this->service = new Gmail($this->client);
     }
 
     public function getUserMessages()
