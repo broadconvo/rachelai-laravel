@@ -60,6 +60,7 @@ class KnowledgebaseController extends Controller
             'data' => $knowledgebase
         ]);
     }
+
     public function show($knowledgebaseId)
     {
         $knowledgebase = Knowledgebase::with(['entries' => function ($query) {
@@ -69,6 +70,26 @@ class KnowledgebaseController extends Controller
 
         return response()->json([
            'data' => $knowledgebase
+        ]);
+    }
+
+    public function update($knowledgebaseId)
+    {
+        request()->validate([
+            'updated_by' => ['required', 'email', 'exists:broadconvo.user_master,email'],
+            'label' => ['string', 'max:255', 'nullable'],
+            'industry' => ['string', 'max:255', 'nullable'],
+            'entry.content' => ['string', 'nullable'],
+        ]);
+
+        $knowledgebase = Knowledgebase::whereKbId($knowledgebaseId)->first();
+
+        if(!$knowledgebase)
+            abort(404, 'Knowledgebase not found');
+
+        return response()->json([
+            'message' => 'Successfully updated knowledgebase',
+            'data' => $knowledgebase
         ]);
     }
 

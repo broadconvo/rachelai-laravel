@@ -59,6 +59,7 @@ Route::prefix('broadconvo')->group(function() {
     Route::get('rachels/{rachel}', [RachelController::class, 'show']);
 
     Route::post('knowledgebases', [KnowledgebaseController::class, 'create']);
+    Route::put('knowledgebases/{knowledgebase}', [KnowledgebaseController::class, 'update']);
     Route::delete('knowledgebases/{knowledgebase}', [KnowledgebaseController::class, 'destroy']);
     Route::get('knowledgebases/{knowledgebase}', [KnowledgebaseController::class, 'show']);
     Route::get('knowledgebases/{knowledgebase}/download', [KnowledgebaseController::class, 'download']);
