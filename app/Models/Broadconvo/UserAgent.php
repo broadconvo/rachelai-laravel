@@ -3,6 +3,7 @@
 namespace App\Models\Broadconvo;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class UserAgent extends Model
 {
@@ -30,4 +31,13 @@ class UserAgent extends Model
         });
     }
 
+    public function tenant(): BelongsTo
+    {
+        return $this->belongsTo(Tenant::class, 'tenant_id', 'tenant_id');
+    }
+
+    public function master()
+    {
+        return $this->belongsTo(UserMaster::class, 'master_id', 'master_id');
+    }
 }

@@ -20,4 +20,9 @@ class TenantRachel extends Model
     protected $keyType = 'string';
 
     protected $guarded = [];
+
+    public function knowledgebases()
+    {
+        return $this->hasMany(Knowledgebase::class, 'rachel_id', 'rachel_id');
+    }
 }
