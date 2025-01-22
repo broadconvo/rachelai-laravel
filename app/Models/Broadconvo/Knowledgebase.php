@@ -3,6 +3,7 @@
 namespace App\Models\Broadconvo;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Knowledgebase extends Model
 {
@@ -17,4 +18,9 @@ class Knowledgebase extends Model
     protected $keyType = 'string';
 
     protected $guarded = [];
+
+    public function entries(): HasMany
+    {
+        return $this->hasMany(KnowledgebaseEntry::class, 'kb_id','kb_id');
+    }
 }
