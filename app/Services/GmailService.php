@@ -130,12 +130,15 @@ class GmailService
 
         $body = '';
         $sender = '';
+        $subject = '';
 
         // Extract the 'From' header for the sender's email
         foreach ($headers as $header) {
-            if (strtolower($header->getName()) === 'from') {
+            $headerName = strtolower($header->getName());
+            if ($headerName === 'from') {
                 $sender = $header->getValue();
-                break;
+            } elseif ($headerName === 'subject') {
+                $subject = $header->getValue();
             }
         }
 
@@ -154,29 +157,34 @@ class GmailService
 
         return [
             'id' => $message->getId(),
+            'subject' => $subject,
             'snippet' => $message->getSnippet(),
             'body' => $body,
             'sender' => $sender,
         ];
     }
 
-    public function refreshToken(GoogleToken $googleToken)
+    public function refreshToken(): void
     {
-        $client = new Client();
-        $client->setClientId(env('GOOGLE_CLIENT_ID'));
-        $client->setClientSecret(env('GOOGLE_CLIENT_SECRET'));
-        $client->refreshToken($googleToken->refresh_token); // Your stored refresh token
+        $googleToken = auth()->user()->googleToken;
 
-        $newToken = $client->fetchAccessTokenWithRefreshToken($googleToken->refresh_token);
+        if (!$googleToken) {
+            Log::error('No Google token found');
+            // throw new \Exception('No Google token found.');
+        }
 
-        GoogleToken::updateOrCreate(
-            ['user_id' => auth()->id()],
-            [
-                'access_token' => $newToken['access_token'],
-                'refresh_token' => $newToken['refresh_token'],
-                'expires_in' => 3600, // 1hr in seconds
-            ]
-        );
+        if (Carbon::now()->timestamp > $googleToken->expires_at) {
+            $newToken = $this->client->fetchAccessTokenWithRefreshToken($googleToken->refresh_token);
+            GoogleToken::updateOrCreate(
+                ['user_id' => auth()->id()],
+                [
+                    'access_token' => $newToken['access_token'],
+                    'refresh_token' => $newToken['refresh_token'],
+                    'expires_in' => $newToken['expires_in'], // 1hr in seconds
+                ]
+            );
+            Log::info('Successfully refreshed the token');
+        }
     }
 
     public function createDraft($to, $threadId, $body, $from = null)
