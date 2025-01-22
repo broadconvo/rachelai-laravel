@@ -17,8 +17,8 @@ class KnowledgebaseController extends Controller
             'creator_email' => ['required', 'email', 'exists:broadconvo.user_master,email'],
             'rachel_id' => ['required', 'string', 'exists:broadconvo.rachel_tenant,rachel_id'],
             'label' => ['required', 'string', 'max:255'],
-            'industry' => ['string', 'max:255'],
-            'entry.content' => ['required', 'string'],
+            'industry' => ['string', 'max:255', 'nullable'],
+            'entry.content' => ['string', 'nullable'],
             'entry.language' => ['required', 'string'],
             'entry.new_text' => ['string'],
         ]);
@@ -38,14 +38,16 @@ class KnowledgebaseController extends Controller
 
             $agentId = $master->userAgent->agent_id;
 
-            $knowledgebase->addEntry([
-                'kb_content' => request('entry.content'),
-                'kb_new_text' => request('entry.new_text') ?? null,
-                'kb_language' => request('entry.language'),
-                'kb_metadata' => request('entry.metadata') ?? null,
-                'created_by' => $agentId,
-                'updated_by' => $agentId,
-            ]);
+            // create the entry if included
+            if(request('entry.content'))
+                $knowledgebase->addEntry([
+                    'kb_content' => request('entry.content'),
+                    'kb_new_text' => request('entry.new_text') ?? null,
+                    'kb_language' => request('entry.language'),
+                    'kb_metadata' => request('entry.metadata') ?? null,
+                    'created_by' => $agentId,
+                    'updated_by' => $agentId,
+                ]);
 
             return $knowledgebase;
         }); // end DB transaction
