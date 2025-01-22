@@ -11,16 +11,28 @@ class Knowledgebase extends Model
 
     protected $table = 'kb_rachel';
 
-    protected $primaryKeys = ['kb_id', 'rachel_id'];
+    protected $primaryKey = 'kb_id';
+
+    public $incrementing = false;
 
     public $timestamps = false;
 
     protected $keyType = 'string';
 
-    protected $guarded = [];
+    protected $fillable = [
+        'rachel_id',
+        'kb_id',
+        'kb_label',
+        'kb_industry',
+    ];
 
     public function entries(): HasMany
     {
         return $this->hasMany(KnowledgebaseEntry::class, 'kb_id','kb_id');
+    }
+
+    public function addEntry(array $entry)
+    {
+        return $this->entries()->create($entry);
     }
 }
