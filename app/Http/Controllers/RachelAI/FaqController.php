@@ -5,21 +5,25 @@ namespace App\Http\Controllers\RachelAI;
 use App\Agents\FaqAgent;
 use App\Http\Controllers\Controller;
 use App\Models\Broadconvo\UserMaster;
+use App\Models\User;
 use App\Services\GmailService;
+use Google\Client;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use TomShaw\GoogleApi\GoogleClient;
+use TomShaw\GoogleApi\Models\GoogleToken;
 
 class FaqController extends Controller
 {
     public function generate()
     {
-        $user = auth()->loginUsingId(3);
+        request()->validate([
+            'email' => ['required', 'email', 'exists:users,email'],
+        ]);
 
-        if(!$user->googleToken?->access_token) {
-            return response(['message' => 'Action not allowed by user']);
-        }
+        $user = User::where('email', request('email'))->first();
+        auth()->loginUsingId($user->id);
 
         $userMaster = UserMaster::with('userAgent')
             ->whereEmail($user->email)
@@ -29,19 +33,24 @@ class FaqController extends Controller
             return response(['message' => 'User not found in CRM']);
         }
 
+
         $agentId = $userMaster->userAgent->agent_id;
 
 
 
         /*
         |--------------------------------------------------------------------------
-        | Step 1: Retrieve email-sent items
+        | Step 1: Refresh and Retrieve email-sent items
         |--------------------------------------------------------------------------
         */
-        $gmailService = new GmailService(app(GoogleClient::class));
+        $gmailService = new GmailService();
+
+        // Refresh token
+        $gmailService->refreshToken();
+        // returns all collected sent-items that was saved in DB
         $sentItems = $gmailService->getSentItems();
 
-
+        dd($sentItems);
         /*
         |--------------------------------------------------------------------------
         | Step 2: Generate FAQs based from the email-sent items
@@ -55,7 +64,7 @@ class FaqController extends Controller
         */
         $reformattedSentItems = collect($sentItems)
             ->map(function ($email, $index) {
-                return "Email #".($index + 1).":\n".$email['body'];
+                return "Email #".($index + 1).":\n".$email->content;
             })->implode("\n");
 
         $faqAgent = new FaqAgent();
@@ -80,42 +89,55 @@ class FaqController extends Controller
         // UserAgent > Tenant > rachel_tenant
         // New Rachel will be added under rachel_tenant
         // the id that will be generated under rachel_tenant is the $rachelId
-        $rachelId = '09238402';
-        $listUrl = config('addwin.rachel.url.knowledgeBase.list');
-        $listResponse = Http::get($listUrl.'?rachel_id='.$rachelId);
+        $userMaster = UserMaster::with('userAgent.tenant.knowledgebases')
+            ->whereEmail($user->email)->first();
+        $rachel = $userMaster->userAgent->tenant->rachels[0];
+        $rachelId = $rachel->rachel_id;
+        $knowledgebases = $rachel->knowledgebases;
 
-        if ($listResponse->failed()) {
-            abort($listResponse->status(), 'Error occurred: '.$listResponse->body());
+        $existingDocuments = collect($knowledgebases);
+
+        // check if Email FAQ already exists
+        $selectedItem = $existingDocuments->filter(function ($item) {
+            return stripos($item['kb_label'], 'Email FAQs') !== false;
+        });
+
+        // creates new file if it does not exist yet
+        if(!count($selectedItem)){
+            // 3.2: create filename for the next knowledge base document and push to the list
+            $filename = 'master.' . str()->uuid() . '.txt';
+
+            $existingDocuments = $existingDocuments->push([
+                'file' => $filename,
+                'name' => 'Email FAQs',
+                'industry' => ''
+            ]);
+
+            $addToListPayload = [
+                'kb_label' => 'Email FAQs',
+                'agent_id' => $agentId,
+                'rachel_id' => $rachelId,
+                'data' => $existingDocuments->toArray(),
+                'index' => count($existingDocuments)-1
+            ];
+
+            $headers = ['Content-Type' => 'application/json', 'Accept' => 'application/json'];
+            $listUrl = config('addwin.rachel.url.knowledgeBase.list');
+            $addToListResponse = Http::withHeaders($headers)->post($listUrl, $addToListPayload);
+
+            if ($addToListResponse->failed()) {
+                abort($addToListResponse->status(), 'Error occurred: '.$addToListResponse->body());
+            }
+
+            Log::info('Successfully created new knowledge base document ' . $filename);
+        }
+        else {
+            $selectedItemIndex = $existingDocuments->search(function ($item) {
+                return stripos($item['kb_label'], 'Email FAQs') !== false;
+            });
+            $filename = $selectedItem[$selectedItemIndex]['kb_id'];
         }
 
-        $existingDocuments = collect($listResponse->json());
-
-        // 3.2: create filename for the next knowledge base document and push to the list
-        $filename = 'master.' . str()->uuid() . '.txt';
-
-        $existingDocuments = $existingDocuments->push([
-            'file' => $filename,
-            'name' => 'Knowledgebase '.count($existingDocuments)+1,
-            'industry' => ''
-        ]);
-
-        $addToListPayload = [
-            'agent_id' => $agentId,
-            'rachel_id' => $rachelId,
-            'data' => $existingDocuments->toArray(),
-            'index' => count($existingDocuments)-1
-        ];
-
-        $headers = ['Content-Type' => 'application/json', 'Accept' => 'application/json'];
-
-        $addToListResponse = Http::withHeaders($headers)->post($listUrl, $addToListPayload);
-
-
-        if ($addToListResponse->failed()) {
-            abort($addToListResponse->status(), 'Error occurred: '.$addToListResponse->body());
-        }
-
-        Log::info('Successfully created knowledge base document ' . $filename);
 
         /*
         |--------------------------------------------------------------------------
