@@ -60,6 +60,8 @@ class GmailService
 
     public function getSentItems()
     {
+
+        $user = auth()->user();
         // NOTE: Only retrieves email filters that has operation: read_sent
 
         // TODO: i need subject, from, to, date, message-id, body
@@ -67,7 +69,7 @@ class GmailService
         //  Ground Breaker <groundbreaker08@gmail.com>
 
         // e.g: "from:some@example.com"
-        $filters = auth()->user()
+        $filters = $user
             ->emailFilters()
             ->whereOperation(GmailOperation::READ_SENT)
             ->get();
@@ -81,14 +83,41 @@ class GmailService
             ->listUsersMessages('me',
                 [
                     'q' => 'is:sent '.$filters,
+                    'maxResults' => 10
                 ]);
-        $messages = [];
 
+        $messages = [];
         foreach ($messagesResponse->getMessages() as $message) {
-            $messages[] = $this->getMessageDetails($message->getId());
+
+            $messageDetails = $this->getMessageDetails($message->getId());
+            $messages[] = [
+                'user_id' => $user->id,
+                'message_id' => $message->getId(),
+                'subject' => $messageDetails['subject'],
+                'content' => $messageDetails['body'],
+            ];
+
         }
 
-        return $messages;
+        // choose all the message that does not exist yet in DB
+        $messageIds = collect($messages)->pluck('message_id')->toArray();
+
+        // Fetch existing message IDs from the database
+        $existingMessageIds = GmailSentItem::whereIn('message_id', $messageIds)
+            ->pluck('message_id')
+            ->toArray();
+
+        // Remove existing messages from the $messages array
+        $filteredMessages = collect($messages)->reject(function ($message) use ($existingMessageIds) {
+            return in_array($message['message_id'], $existingMessageIds);
+        })->values()->all();
+
+        if(count($filteredMessages)) {
+            GmailSentItem::upsert($filteredMessages, ['message_id'], ['subject', 'content']);
+        }
+
+        // retrieve all including past items that was saved already
+        return GmailSentItem::whereUserId($user->id)->get();
     }
     /**
      * Get the details of a single message.
