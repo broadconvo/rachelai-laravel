@@ -113,11 +113,23 @@ class GmailService
         })->values()->all();
 
         if(count($filteredMessages)) {
-            GmailSentItem::upsert($filteredMessages, ['message_id'], ['subject', 'content']);
+            $sentItems = GmailSentItem::upsert($filteredMessages, ['message_id'], ['subject', 'content']);
+            Log::info('Adding new sent items');
+            // retrieve all including past items that was saved already
+            if(!$sentItems){
+                Log::info('No sent items has been saved');
+                abort(422,'No sent items has been saved');
+            }
+
+            return $filteredMessages;
+        }
+        else {
+            Log::info('No new sent items to add');
+            return [];
         }
 
-        // retrieve all including past items that was saved already
-        return GmailSentItem::whereUserId($user->id)->get();
+
+
     }
     /**
      * Get the details of a single message.

@@ -30,7 +30,6 @@
 
     Output Example:
 
-    KNOWLEDGE BASE: Email FAQs
     FAQ #1
     •	Question: What is the process for submitting a refund request?
     •	Answer: To submit a refund request, customers must complete the refund form and send it to support@example.com within 30 days of purchase.

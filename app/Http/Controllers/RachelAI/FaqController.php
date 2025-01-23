@@ -4,15 +4,18 @@ namespace App\Http\Controllers\RachelAI;
 
 use App\Agents\FaqAgent;
 use App\Http\Controllers\Controller;
+use App\Models\Broadconvo\Knowledgebase;
 use App\Models\Broadconvo\UserMaster;
 use App\Models\User;
 use App\Services\GmailService;
 use Google\Client;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use TomShaw\GoogleApi\GoogleClient;
 use TomShaw\GoogleApi\Models\GoogleToken;
+use function PHPUnit\Framework\isEmpty;
 
 class FaqController extends Controller
 {
@@ -34,10 +37,6 @@ class FaqController extends Controller
         }
 
 
-        $agentId = $userMaster->userAgent->agent_id;
-
-
-
         /*
         |--------------------------------------------------------------------------
         | Step 1: Refresh and Retrieve email-sent items
@@ -50,7 +49,6 @@ class FaqController extends Controller
         // returns all collected sent-items that was saved in DB
         $sentItems = $gmailService->getSentItems();
 
-        dd($sentItems);
         /*
         |--------------------------------------------------------------------------
         | Step 2: Generate FAQs based from the email-sent items
@@ -62,9 +60,16 @@ class FaqController extends Controller
         |
         |
         */
+
+        if(!$sentItems) {
+            Log::info('No sent items to generate for FAQ');
+            abort(422, 'No sent items to generate for FAQ');
+        }
+
+        Log::info('New additional sent item to generate for FAQ');
         $reformattedSentItems = collect($sentItems)
             ->map(function ($email, $index) {
-                return "Email #".($index + 1).":\n".$email->content;
+                return "Email #".($index + 1).":\n".$email['content'];
             })->implode("\n");
 
         $faqAgent = new FaqAgent();
@@ -91,53 +96,39 @@ class FaqController extends Controller
         // the id that will be generated under rachel_tenant is the $rachelId
         $userMaster = UserMaster::with('userAgent.tenant.knowledgebases')
             ->whereEmail($user->email)->first();
+
         $rachel = $userMaster->userAgent->tenant->rachels[0];
+
         $rachelId = $rachel->rachel_id;
+
         $knowledgebases = $rachel->knowledgebases;
 
         $existingDocuments = collect($knowledgebases);
 
         // check if Email FAQ already exists
-        $selectedItem = $existingDocuments->filter(function ($item) {
-            return stripos($item['kb_label'], 'Email FAQs') !== false;
-        });
+        $knowledgebaseLabel = 'Email FAQs';
+
+        $selectedItem = $existingDocuments->filter(function ($item) use($knowledgebaseLabel) {
+            return stripos($item['kb_label'], $knowledgebaseLabel) !== false;
+        })->first();
 
         // creates new file if it does not exist yet
-        if(!count($selectedItem)){
-            // 3.2: create filename for the next knowledge base document and push to the list
-            $filename = 'master.' . str()->uuid() . '.txt';
-
-            $existingDocuments = $existingDocuments->push([
-                'file' => $filename,
-                'name' => 'Email FAQs',
-                'industry' => ''
-            ]);
-
-            $addToListPayload = [
-                'kb_label' => 'Email FAQs',
-                'agent_id' => $agentId,
+        $newKnowledgebaseId = 'master.'.str()->uuid().'.txt';
+        $knowledgebase = Knowledgebase::updateOrCreate(
+            ['kb_id' => optional($selectedItem)->kb_id ?? $newKnowledgebaseId ] ,
+            [
                 'rachel_id' => $rachelId,
-                'data' => $existingDocuments->toArray(),
-                'index' => count($existingDocuments)-1
-            ];
+                'kb_label' => $knowledgebaseLabel,
+            ]
+        );
 
-            $headers = ['Content-Type' => 'application/json', 'Accept' => 'application/json'];
-            $listUrl = config('addwin.rachel.url.knowledgeBase.list');
-            $addToListResponse = Http::withHeaders($headers)->post($listUrl, $addToListPayload);
-
-            if ($addToListResponse->failed()) {
-                abort($addToListResponse->status(), 'Error occurred: '.$addToListResponse->body());
-            }
-
-            Log::info('Successfully created new knowledge base document ' . $filename);
+        if(!$knowledgebase){
+            Log::error('Failed to create knowledgebase' . request('label'));
+            abort(422, 'Failed to create knowledgebase');
         }
-        else {
-            $selectedItemIndex = $existingDocuments->search(function ($item) {
-                return stripos($item['kb_label'], 'Email FAQs') !== false;
-            });
-            $filename = $selectedItem[$selectedItemIndex]['kb_id'];
-        }
-
+        Log::info($selectedItem
+            ? 'Existing knowledgebase retrieved: '. $selectedItem->kb_id
+            : 'New knowledgebase created: '. $knowledgebase->kb_id);
 
         /*
         |--------------------------------------------------------------------------
@@ -151,21 +142,37 @@ class FaqController extends Controller
         |
         */
 
-        $uploadUrl = config('addwin.rachel.url.knowledgeBase.text');
-        $uploadPayload = [
-            'agent_id' => $agentId,
-            'rachel_id' => $rachelId,
-            'kb_file' => $filename,
-            'training_data' => $faqResult->value['content']
-        ];
-        $uploadResponse = Http::withHeaders($headers)->post($uploadUrl, $uploadPayload);
+        $master = UserMaster::with('userAgent')
+            ->whereEmail(request('email'))
+            ->first();
 
-        if ($uploadResponse->failed()) {
-            abort($uploadResponse->status(), 'Error occurred: '.$uploadResponse->body());
+        $agentId = $master->userAgent->agent_id;
+
+        // concatenate existing content to new faq-content
+        $content = $faqResult->value['content'];
+
+        if($selectedItem) {
+            $entries = $knowledgebase
+                ->entries()
+                ->latest()
+                ->first();
+
+            if($entries)
+                $content = $entries->kb_content . "\n\n". $content;
+            else
+                Log::info('No previous knowledgebase entries found');
         }
 
-        Log::info('Successfully inserted FAQ into the document ' . $filename);
+        // Create the entry for knowledgebase
+        $knowledgebase->addEntry([
+            'kb_content' => $content,
+            'kb_language' => 'en',
+            'created_by' => $agentId,
+            'updated_by' => $agentId,
+        ]);
 
-        return response()->json(['message' => 'Successfully added knowledge base document.']);
+        Log::info('Successfully created entry in knowledgebase' . $newKnowledgebaseId);
+
+        return response()->json(['message' => 'Successfully processed knowledgebase.']);
     }
 }
