@@ -62,8 +62,8 @@ class FaqController extends Controller
         */
 
         if(!$sentItems) {
-            Log::info('No sent items to generate for FAQ');
-            abort(422, 'No sent items to generate for FAQ');
+            Log::info('No additional sent items to generate for FAQ');
+            abort(422, 'No additional sent items to generate for FAQ');
         }
 
         Log::info('New additional sent item to generate for FAQ');
