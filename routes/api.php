@@ -94,5 +94,5 @@ Route::prefix('rachel')->group(function() {
     Route::get('/email-agent/filters/create', [EmailAgentController::class, 'createFilters']);// ->withoutMiddleware(Ensure);
     Route::get('/email-agent/google-status', [EmailAgentController::class, 'googleStatus']);
 
-    Route::get('/faq', [FaqController::class, 'generate']);
+    Route::post('/email-agent/train', [FaqController::class, 'generate']);
 });
