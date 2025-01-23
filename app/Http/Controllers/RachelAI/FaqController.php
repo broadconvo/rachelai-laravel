@@ -112,10 +112,10 @@ class FaqController extends Controller
             return stripos($item['kb_label'], $knowledgebaseLabel) !== false;
         })->first();
 
-        // creates new file if it does not exist yet
-        $newKnowledgebaseId = 'master.'.str()->uuid().'.txt';
+        // new filename if there is no existing knowledgebase for Email FAQ
+        $knowledgebaseId = optional($selectedItem)->kb_id ?? 'master.'.str()->uuid().'.txt';
         $knowledgebase = Knowledgebase::updateOrCreate(
-            ['kb_id' => optional($selectedItem)->kb_id ?? $newKnowledgebaseId ] ,
+            ['kb_id' => $knowledgebaseId ] ,
             [
                 'rachel_id' => $rachelId,
                 'kb_label' => $knowledgebaseLabel,
@@ -123,12 +123,12 @@ class FaqController extends Controller
         );
 
         if(!$knowledgebase){
-            Log::error('Failed to create knowledgebase' . request('label'));
+            Log::error('Failed to create or update knowledgebase: ' . $knowledgebaseId);
             abort(422, 'Failed to create knowledgebase');
         }
         Log::info($selectedItem
-            ? 'Existing knowledgebase retrieved: '. $selectedItem->kb_id
-            : 'New knowledgebase created: '. $knowledgebase->kb_id);
+            ? 'Existing knowledgebase retrieved: '. $knowledgebaseId
+            : 'New knowledgebase created: '. $knowledgebaseId);
 
         /*
         |--------------------------------------------------------------------------
@@ -163,7 +163,7 @@ class FaqController extends Controller
                 Log::info('No previous knowledgebase entries found');
         }
 
-        // Create the entry for knowledgebase
+        // Always create new entry for EMAIL FAQ knowledgebase
         $knowledgebase->addEntry([
             'kb_content' => $content,
             'kb_language' => 'en',
@@ -171,13 +171,22 @@ class FaqController extends Controller
             'updated_by' => $agentId,
         ]);
 
-        Log::info('Successfully created entry in knowledgebase' . $newKnowledgebaseId);
+        Log::info('Successfully created entry in knowledgebase: ' . $knowledgebaseId);
 
-        // Rachel AI Legacy functions
+        /*
+        |--------------------------------------------------------------------------
+        | Step 5: Use Rachel AI Legacy functions
+        |--------------------------------------------------------------------------
+        |
+        |   use POST /kb/list to reload the CSV file:
+        |   use POST /kb/upload/text to process the upload
+        |
+        */
         $headers = ['Content-Type' => 'application/json', 'Accept' => 'application/json'];
 
 
         // reload CSV file
+        $knowledgebases[] = $knowledgebase;
         $csvListData = $knowledgebases->map(function($document) {
             return [
                 'file' => $document->kb_id,
@@ -185,6 +194,11 @@ class FaqController extends Controller
                 'industry' => $document->kb_industry,
             ];
         });
+
+        if(!count($csvListData)){
+            Log::error('No knowledgebase list to send. '. json_encode($csvListData) );
+            abort(422, 'No knowledgebase list to send.');
+        }
 
         $csvListUrl = config('addwin.rachel.url.knowledgeBase.list');
         $csvListPayload = [
@@ -204,7 +218,7 @@ class FaqController extends Controller
         $processUploadPayload = [
             'agent_id' => $agentId,
             'rachel_id' => $rachelId,
-            'kb_file' => $newKnowledgebaseId,
+            'kb_file' => $knowledgebaseId,
             'training_data' => $content,
             'kb_label' => $knowledgebaseLabel
         ];
@@ -218,7 +232,7 @@ class FaqController extends Controller
         return response()->json([
             'message' => 'Successfully processed knowledgebase.',
             'data' => [
-                'file' => $newKnowledgebaseId,
+                'file' => $knowledgebaseId,
                 'label' => $knowledgebaseLabel,
                 'rachel_id' => $rachelId
             ]
