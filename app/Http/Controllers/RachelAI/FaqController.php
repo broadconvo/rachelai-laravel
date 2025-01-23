@@ -173,6 +173,55 @@ class FaqController extends Controller
 
         Log::info('Successfully created entry in knowledgebase' . $newKnowledgebaseId);
 
-        return response()->json(['message' => 'Successfully processed knowledgebase.']);
+        // Rachel AI Legacy functions
+        $headers = ['Content-Type' => 'application/json', 'Accept' => 'application/json'];
+
+
+        // reload CSV file
+        $csvListData = $knowledgebases->map(function($document) {
+            return [
+                'file' => $document->kb_id,
+                'name' => $document->kb_label,
+                'industry' => $document->kb_industry,
+            ];
+        });
+
+        $csvListUrl = config('addwin.rachel.url.knowledgeBase.list');
+        $csvListPayload = [
+            'data' => $csvListData->toArray(),
+            'rachel_id' => $rachelId,
+        ];
+        Log::info(json_encode($csvListPayload));
+
+        $csvListResponse = Http::withHeaders($headers)->post($csvListUrl, $csvListPayload);
+        if ($csvListResponse->failed()) {
+            abort($csvListResponse->status(), 'Failed to do reloadCsv(): '.$csvListResponse->body());
+        }
+
+        // imitate processUpload by calling /kb/upload/text
+        // this is going to create a vector based on the listed files in CSV
+        $processUploadUrl = config('addwin.rachel.url.knowledgeBase.text');
+        $processUploadPayload = [
+            'agent_id' => $agentId,
+            'rachel_id' => $rachelId,
+            'kb_file' => $newKnowledgebaseId,
+            'training_data' => $content,
+            'kb_label' => $knowledgebaseLabel
+        ];
+        $processUploadResponse = Http::withHeaders($headers)->post($processUploadUrl, $processUploadPayload);
+
+        if ($processUploadResponse->failed()) {
+            abort($processUploadResponse->status(), 'Failed to do processUpload(): '.$processUploadResponse->body());
+        }
+
+
+        return response()->json([
+            'message' => 'Successfully processed knowledgebase.',
+            'data' => [
+                'file' => $newKnowledgebaseId,
+                'label' => $knowledgebaseLabel,
+                'rachel_id' => $rachelId
+            ]
+        ]);
     }
 }
