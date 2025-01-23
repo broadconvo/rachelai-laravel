@@ -8,5 +8,5 @@ class GmailSentItem extends Model
 {
     protected $table = 'sent_items';
 
-    protected $fillable = ['user_id', 'message_id', 'subject', 'content', 'filename'];
+    protected $fillable = ['user_id', 'message_id'];
 }

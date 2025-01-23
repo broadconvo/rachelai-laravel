@@ -15,9 +15,6 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->string('message_id');
-            $table->longText('subject');
-            $table->longText('content');
-            $table->string('filename')->nullable();
             $table->timestamps();
 
             $table->unique('message_id');

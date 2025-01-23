@@ -93,7 +93,6 @@ class GmailService
             $messages[] = [
                 'user_id' => $user->id,
                 'message_id' => $message->getId(),
-                'subject' => $messageDetails['subject'],
                 'content' => $messageDetails['body'],
             ];
 
@@ -113,8 +112,18 @@ class GmailService
         })->values()->all();
 
         if(count($filteredMessages)) {
-            $sentItems = GmailSentItem::upsert($filteredMessages, ['message_id'], ['subject', 'content']);
+
+            $collectedMessageIds = collect($filteredMessages)->map(function ($message) {
+                return [
+                    'user_id' => $message['user_id'],
+                    'message_id' => $message['message_id']
+                ];
+            })->toArray();
+
+            $sentItems = GmailSentItem::upsert($collectedMessageIds, ['message_id'], []);
+
             Log::info('Adding new sent items');
+
             // retrieve all including past items that was saved already
             if(!$sentItems){
                 Log::info('No sent items has been saved');
