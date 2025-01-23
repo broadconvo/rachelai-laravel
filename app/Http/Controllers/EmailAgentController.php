@@ -9,7 +9,6 @@ use App\Enums\GmailSearchOperator;
 use App\Models\EmailFilter;
 use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Http\Response;
 use Illuminate\Validation\Rule;
 
 class EmailAgentController extends Controller
