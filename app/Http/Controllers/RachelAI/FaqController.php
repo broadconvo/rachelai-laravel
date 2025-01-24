@@ -8,19 +8,36 @@ use App\Models\Broadconvo\Knowledgebase;
 use App\Models\Broadconvo\UserMaster;
 use App\Models\User;
 use App\Services\GmailService;
-use Google\Client;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
-use TomShaw\GoogleApi\GoogleClient;
-use TomShaw\GoogleApi\Models\GoogleToken;
-use function PHPUnit\Framework\isEmpty;
+use JetBrains\PhpStorm\NoReturn;
 
 class FaqController extends Controller
 {
-    public function generate()
+    protected $command;
+
+    private function info($message): void
     {
+        Log::info($message);
+        $this->command?->info($message);
+    }
+    #[NoReturn] private function error($message): void
+    {
+        Log::error($message);
+        if(!$this->command) abort(422, $message);
+
+        $this->command?->error($message);
+        $this->command?->info('Exiting command...');
+        exit(0);
+    }
+
+    public function generate(Command $command = null)
+    {
+        // Check if triggered by command
+        $isCommand = request()->input('is_command', false);
+        $isCommand && $this->command = $command;
+
         request()->validate([
             'email' => ['required', 'email', 'exists:users,email'],
         ]);
@@ -33,9 +50,8 @@ class FaqController extends Controller
             ->first();
 
         if (!$userMaster) {
-            return response(['message' => 'User not found in CRM']);
+            $this->error('User not found in CRM');
         }
-
 
         /*
         |--------------------------------------------------------------------------
@@ -62,11 +78,10 @@ class FaqController extends Controller
         */
 
         if(!$sentItems) {
-            Log::info('No additional sent items to generate for FAQ');
-            abort(422, 'No additional sent items to generate for FAQ');
+            $this->error('No additional sent items to generate for FAQ');
         }
 
-        Log::info('New additional sent item to generate for FAQ');
+        $this->info('New additional sent item to generate for FAQ');
         $reformattedSentItems = collect($sentItems)
             ->map(function ($email, $index) {
                 return "Email #".($index + 1).":\n".$email['content'];
@@ -123,10 +138,10 @@ class FaqController extends Controller
         );
 
         if(!$knowledgebase){
-            Log::error('Failed to create or update knowledgebase: ' . $knowledgebaseId);
-            abort(422, 'Failed to create knowledgebase');
+            $this->error('Failed to create or update knowledgebase: ' . $knowledgebaseId);
         }
-        Log::info($selectedItem
+
+        $this->info($selectedItem
             ? 'Existing knowledgebase retrieved: '. $knowledgebaseId
             : 'New knowledgebase created: '. $knowledgebaseId);
 
@@ -160,7 +175,7 @@ class FaqController extends Controller
             if($entries)
                 $content = $entries->kb_content . "\n\n". $content;
             else
-                Log::info('No previous knowledgebase entries found');
+                $this->info('No previous knowledgebase entries found');
         }
 
         // Always create new entry for EMAIL FAQ knowledgebase
@@ -171,7 +186,7 @@ class FaqController extends Controller
             'updated_by' => $agentId,
         ]);
 
-        Log::info('Successfully created entry in knowledgebase: ' . $knowledgebaseId);
+        $this->info('Successfully created entry in knowledgebase DB: ' . $knowledgebaseId);
 
         /*
         |--------------------------------------------------------------------------
@@ -188,6 +203,7 @@ class FaqController extends Controller
         if(!$selectedItem) {
             // add new knowledgebase to the list
             $knowledgebases[] = $knowledgebase;
+            $this->info('Added new knowledgebase (Email FAQs) to the list');
         }
         // reload CSV file
         $csvListData = $knowledgebases->map(function($document) {
@@ -199,8 +215,7 @@ class FaqController extends Controller
         });
 
         if(!count($csvListData)){
-            Log::error('No knowledgebase list to send. '. json_encode($csvListData) );
-            abort(422, 'No knowledgebase list to send.');
+            $this->error('No knowledgebase list to send. '. json_encode($csvListData) );
         }
 
         $csvListUrl = config('addwin.rachel.url.knowledgeBase.list');
@@ -208,12 +223,13 @@ class FaqController extends Controller
             'data' => $csvListData->toArray(),
             'rachel_id' => $rachelId,
         ];
-        Log::info(json_encode($csvListPayload));
 
         $csvListResponse = Http::withHeaders($headers)->post($csvListUrl, $csvListPayload);
         if ($csvListResponse->failed()) {
-            abort($csvListResponse->status(), 'Failed to do reloadCsv(): '.$csvListResponse->body());
+            $this->error('Failed to do reloadCsv(): '.$csvListResponse->body());
         }
+        $this->info('Successfully reloaded knowledgebase list in legacy-rachel POST ' . $csvListUrl);
+
 
         // imitate processUpload by calling /kb/upload/text
         // this is going to create a vector based on the listed files in CSV
@@ -226,19 +242,22 @@ class FaqController extends Controller
             'kb_label' => $knowledgebaseLabel
         ];
         $processUploadResponse = Http::withHeaders($headers)->post($processUploadUrl, $processUploadPayload);
-
         if ($processUploadResponse->failed()) {
-            abort($processUploadResponse->status(), 'Failed to do processUpload(): '.$processUploadResponse->body());
+            $this->error('Failed to do processUpload(): '.$processUploadResponse->body());
         }
+        $this->info('Successfully processed knowledgebase in legacy-rachel POST ' . $processUploadUrl);
+
+        if(!$isCommand)
+            return response()->json([
+                'message' => 'Successfully processed knowledgebase.',
+                'data' => [
+                    'file' => $knowledgebaseId,
+                    'label' => $knowledgebaseLabel,
+                    'rachel_id' => $rachelId
+                ]
+            ]);
 
 
-        return response()->json([
-            'message' => 'Successfully processed knowledgebase.',
-            'data' => [
-                'file' => $knowledgebaseId,
-                'label' => $knowledgebaseLabel,
-                'rachel_id' => $rachelId
-            ]
-        ]);
+        $this->info('--- End of generate FAQ command ---');
     }
 }
