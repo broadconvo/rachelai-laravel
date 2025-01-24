@@ -60,4 +60,11 @@ class User extends Authenticatable
     {
         return $this->hasOne(GoogleToken::class);
     }
+
+    public function scopeWithValidGoogleTokens($query)
+    {
+        return $query->whereHas('googleToken', function ($query) {
+            $query->whereNotNull('refresh_token');
+        });
+    }
 }

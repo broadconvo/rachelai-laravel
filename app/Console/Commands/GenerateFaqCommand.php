@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Http\Controllers\RachelAI\FaqController;
+use App\Models\User;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
 
@@ -27,10 +28,12 @@ class GenerateFaqCommand extends Command
      */
     public function handle()
     {
-        $this->info('--- Starting to generate FAQs ---');
+        $message = '--- Starting to generate FAQs ---';
+        Log::info($message);
+        $this->info($message);
         // list all email that has Google tokens
 
-        $emails = [];
+        $emails = User::withValidGoogleTokens()->get('email')->pluck('email');
 
         foreach($emails as $email) {
             // Simulate a request for the FaqController
