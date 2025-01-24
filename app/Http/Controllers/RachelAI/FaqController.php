@@ -184,9 +184,12 @@ class FaqController extends Controller
         */
         $headers = ['Content-Type' => 'application/json', 'Accept' => 'application/json'];
 
-
+        // check if knowledgebase is already in the list
+        if(!$selectedItem) {
+            // add new knowledgebase to the list
+            $knowledgebases[] = $knowledgebase;
+        }
         // reload CSV file
-        $knowledgebases[] = $knowledgebase;
         $csvListData = $knowledgebases->map(function($document) {
             return [
                 'file' => $document->kb_id,
