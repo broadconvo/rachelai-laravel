@@ -10,8 +10,8 @@ echo "Creating supervisor Directory"
 mkdir "/home/site/wwwroot/storage/logs/supervisor"
 touch "/home/site/wwwroot/storage/logs/supervisor/queue_worker.err.log"
 touch "/home/site/wwwroot/storage/logs/supervisor/queue_worker.out.log"
-touch "/home/site/wwwroot/storage/logs/supervisor/gmail_process_messages.err.log"
-touch "/home/site/wwwroot/storage/logs/supervisor/gmail_process_messages.out.log"
+touch "/home/site/wwwroot/storage/logs/supervisor/schedule_work.err.log"
+touch "/home/site/wwwroot/storage/logs/supervisor/schedule_work.out.log"
 
 echo "Restarting supervisor"
 service supervisor stop
