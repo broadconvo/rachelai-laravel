@@ -18,14 +18,14 @@ class ProcessGmailMessages extends Command
      *
      * @var string
      */
-    protected $signature = 'gmail:process-messages';
+    protected $signature = 'gmail:generate-drafts';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Process Gmail messages for all users with active tokens';
+    protected $description = 'Generate drafts for Gmail messages';
 
 
     /**
@@ -33,8 +33,9 @@ class ProcessGmailMessages extends Command
      */
     public function handle()
     {
-        $this->info('*** Starting to process Gmail messages ***');
-        Log::info('*** Starting to process Gmail messages ***');
+        $message = '--- Starting to process Gmail messages ---';
+        Log::info($message);
+        $this->info($message);
 
         // Retrieve all active Google tokens
         $tokens = GoogleToken::all();
@@ -55,7 +56,7 @@ class ProcessGmailMessages extends Command
         }
 
         $this->line('<fg=green>' . str_repeat('-', 50) . '</>');
-        $this->info('*** End of process ***');
+        $this->info('--- End of process ---');
     }
 
     private function processMessages($user, $token)
