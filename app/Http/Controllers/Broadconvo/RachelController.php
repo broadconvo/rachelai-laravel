@@ -19,7 +19,7 @@ class RachelController extends Controller
             'functions.*' => ['string', 'min:2', 'max:50']
         ]);
 
-        TenantRachel::create([
+        $rachel = TenantRachel::create([
             'rachel_id' => str()->uuid(),
             'tenant_id' => request('tenant_id'),
             'rachel_label' => request('label'),
@@ -28,7 +28,10 @@ class RachelController extends Controller
             'rachel_functions' => json_encode(request('functions')),
         ]);
 
-        return response()->json(['message' => 'Successfully created RachelAI']);
+        return response()->json([
+            'message' => 'Successfully created RachelAI',
+            'data' => $rachel
+        ]);
     }
 
     public function show($rachelId)

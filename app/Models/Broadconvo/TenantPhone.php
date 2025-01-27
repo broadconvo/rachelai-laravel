@@ -12,9 +12,17 @@ class TenantPhone extends Model
 
     protected $primaryKeys = ['did_number', 'tenant_id'];
 
+    public $incrementing = false;
+
     public $timestamps = false;
 
     protected $keyType = 'string';
 
     protected $guarded = [];
+
+    protected function setKeysForSaveQuery($query)
+    {
+        return $query->where('did_number', $this->getAttribute('did_number'))
+            ->where('tenant_id', $this->getAttribute('tenant_id'));
+    }
 }
