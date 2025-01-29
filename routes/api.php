@@ -4,6 +4,7 @@ use App\Http\Controllers\Auth\ApiAuthController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\Broadconvo\CountryController;
 use App\Http\Controllers\Broadconvo\KnowledgebaseController;
+use App\Http\Controllers\Broadconvo\PhoneController;
 use App\Http\Controllers\Broadconvo\PhoneExtensionController;
 use App\Http\Controllers\Broadconvo\RachelController;
 use App\Http\Controllers\Broadconvo\TenantController;
@@ -43,6 +44,8 @@ Route::post('/github/webhook', [GithubController::class, 'handle'])->middleware(
 // APIs for broadconvo database
 Route::prefix('broadconvo')->group(function() {
     Route::get('agents', [BroadconvoUserController::class, 'index']);
+
+    Route::put('phones', [PhoneController::class, 'upsert']);
 
     Route::post('phone-extensions', [PhoneExtensionController::class, 'create']);
     Route::get('phone-extensions', [PhoneExtensionController::class, 'available']);
