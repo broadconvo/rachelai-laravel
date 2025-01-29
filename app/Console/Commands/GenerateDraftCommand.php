@@ -86,8 +86,8 @@ class GenerateDraftCommand extends Command
 
             $this->info("Unread messages found: $messageCount");
 
-            $user = UserMaster::with('rachels')->where('email', $user->email)->first();
-            $rachelId = $user->rachels->first()->rachel_id;
+            $userMaster = UserMaster::with('rachels')->where('email', $user->email)->first();
+            $rachelId = $userMaster->rachels->first()->rachel_id;
             Log::info("Rachel Id: {$rachelId}");
 
             $this->info("Unread messages found: $messageCount");
