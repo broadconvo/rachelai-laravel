@@ -41,7 +41,7 @@ class ApiAuthController extends Controller
     }
 
     public function user() {
-        $user = UserMaster::with('userAgent')
+        $user = UserMaster::with('tenant','userAgent', 'rachels')
             ->whereEmail(Auth::user()->email)
             ->first();
 
