@@ -28,7 +28,7 @@ class GenerateFaqCommand extends Command
      */
     public function handle()
     {
-        $message = '--- Starting to generate FAQs ---';
+        $message = '--- Starting FAQ - read_sent ---';
         Log::info($message);
         $this->info($message);
         // list all email that has Google tokens

@@ -33,7 +33,7 @@ class GenerateDraftCommand extends Command
      */
     public function handle()
     {
-        $message = '--- Starting to process Gmail messages ---';
+        $message = '--- Starting DRAFT - read_inbox ---';
         Log::info($message);
         $this->info($message);
 
