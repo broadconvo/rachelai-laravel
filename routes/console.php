@@ -11,11 +11,7 @@ Artisan::command('inspire', function () {
 })->purpose('Display an inspiring quote')->hourly();
 
 Schedule::command(GenerateDraftCommand::class)
-    ->everyMinute()
-    ->withoutOverlapping(300); // Lock expires after 5 minutes
-
-Schedule::command(GenerateDraftCommand::class)
-    ->everyMinute()
+    ->everyTwoMinutes()
     ->withoutOverlapping(300); // Lock expires after 5 minutes
 
 Schedule::command(GenerateFaqCommand::class)
