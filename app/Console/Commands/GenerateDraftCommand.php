@@ -71,6 +71,8 @@ class GenerateDraftCommand extends Command
 
             // Initialize Gmail Service
             $gmailService = new GmailService();
+            // TODO:: refresh token in generate-draft and generate-faq is locking the pgsql table
+            // do not refresh token if it is not yet expired
             $this->info("Refreshing token ...");
             $gmailService->refreshToken();
             $this->info('Retrieving messages ...');
