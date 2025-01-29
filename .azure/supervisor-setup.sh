@@ -6,6 +6,9 @@ echo "--------------------------------------------------------"
 echo "Copying laravel schedule worker supervisor configuration"
 cp /home/site/wwwroot/.azure/laravel-schedule-worker.conf /etc/supervisor/conf.d/laravel-schedule-worker.conf
 
+#echo "Copying laravel queue worker supervisor configuration"
+#cp /home/site/wwwroot/.azure/laravel-queue-worker.conf /etc/supervisor/conf.d/laravel-queue-worker.conf
+
 echo "Creating supervisor Directory"
 mkdir "/home/site/wwwroot/storage/logs/supervisor"
 touch "/home/site/wwwroot/storage/logs/supervisor/queue_worker.err.log"
