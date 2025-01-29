@@ -3,8 +3,8 @@ echo "========================================================"
 echo "Supervisor Setup"
 echo "--------------------------------------------------------"
 
-echo "Copying laravel worker supervisor configuration"
-cp /home/site/wwwroot/.azure/laravel-worker.conf /etc/supervisor/conf.d/laravel-worker.conf
+echo "Copying laravel schedule worker supervisor configuration"
+cp /home/site/wwwroot/.azure/laravel-schedule-worker.conf /etc/supervisor/conf.d/laravel-schedule-worker.conf
 
 echo "Creating supervisor Directory"
 mkdir "/home/site/wwwroot/storage/logs/supervisor"
