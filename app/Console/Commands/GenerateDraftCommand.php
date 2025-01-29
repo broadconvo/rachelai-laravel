@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Log;
 use TomShaw\GoogleApi\GoogleClient;
 use TomShaw\GoogleApi\Models\GoogleToken;
 
-class ProcessGmailMessages extends Command
+class GenerateDraftCommand extends Command
 {
     /**
      * The name and signature of the console command.
@@ -66,8 +66,8 @@ class ProcessGmailMessages extends Command
             // Initialize Google Client and set the token manually
 
             // Initialize Gmail Service
-            $gmailService = new GmailService(app(GoogleClient::class));
-            $gmailService->refreshToken($token);
+            $gmailService = new GmailService();
+            $gmailService->refreshToken();
             $messages = $gmailService->getUserMessages();
 
             if (!$messageCount = count($messages)) {
@@ -93,8 +93,8 @@ class ProcessGmailMessages extends Command
                 $headers = ['Content-Type' => 'application/json', 'Accept' => 'application/json'];
 
                 // Send the request to Rachel
-                // going to /voice/query
-                $response = Http::withHeaders($headers)->post(env('RACHEL_QUERY_URL'), $postData);
+                // going to /email/query
+                $response = Http::withHeaders($headers)->post(config('addwin.rachel.url.email'), $postData);
 
                 $responseBody = 'No response from Rachel.';
                 if ($response->successful()) {

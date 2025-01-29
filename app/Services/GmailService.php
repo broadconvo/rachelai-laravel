@@ -39,7 +39,6 @@ class GmailService
             ->map(fn($filter) => $filter->operator.':'.$filter->value)
             ->implode(' ');
 
-        // TODO: filter should be the user's desired to: filter
         // to:myuan@broadconvo.com
         // User wants to only check for emails that goes to said filter
         $messagesResponse = $this->service
