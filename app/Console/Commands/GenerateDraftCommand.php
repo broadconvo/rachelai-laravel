@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Models\Broadconvo\UserMaster;
 use App\Services\GmailService;
 use Google\Client;
 use Illuminate\Console\Command;
@@ -33,6 +34,7 @@ class GenerateDraftCommand extends Command
      */
     public function handle()
     {
+        $this->line('<fg=green>' . str_repeat('-', 50) . '</>');
         $message = '--- Starting DRAFT - read_inbox ---';
         Log::info($message);
         $this->info($message);
@@ -47,6 +49,7 @@ class GenerateDraftCommand extends Command
 
         foreach ($tokens as $token) {
             $this->line('<fg=green>' . str_repeat('-', 50) . '</>');
+
             $user =  Auth::loginUsingId($token->user_id);
 
             $this->info("Processing messages for {$user->email}...");
@@ -55,20 +58,24 @@ class GenerateDraftCommand extends Command
             $this->processMessages($user, $token);
         }
 
-        $this->line('<fg=green>' . str_repeat('-', 50) . '</>');
         $this->info('--- End of process ---');
+        $this->line('<fg=green>' . str_repeat('-', 50) . '</>');
+
+        Log::info('--- End of process ---');
     }
 
     private function processMessages($user, $token)
     {
-        $this->info('Retrieving messages ...');
         try {
             // Initialize Google Client and set the token manually
 
             // Initialize Gmail Service
             $gmailService = new GmailService();
+            $this->info("Refreshing token ...");
             $gmailService->refreshToken();
+            $this->info('Retrieving messages ...');
             $messages = $gmailService->getUserMessages();
+
 
             if (!$messageCount = count($messages)) {
                 $this->info("No new messages for User: {$user->email}");
@@ -76,6 +83,13 @@ class GenerateDraftCommand extends Command
             }
 
             $this->info("Unread messages found: $messageCount");
+
+            $user = UserMaster::with('rachels')->where('email', $user->email)->first();
+            $rachelId = $user->rachels->first()->rachel_id;
+            Log::info("Rachel Id: {$rachelId}");
+
+            $this->info("Unread messages found: $messageCount");
+
             foreach ($messages as $message) {
                 if ($gmailService->hasDraft($message['id'])) {
                     $this->info("Draft already exists for message ID: {$message['id']}");
@@ -86,8 +100,8 @@ class GenerateDraftCommand extends Command
                 $postData = [
                     'message' => $message['body'],
                     'language' => 'English',
-                    'uniqueId' => '1734315099.149537',
-                    'rachelId' => '34682642', // for Addwin Customer Service
+                    'uniqueId' => str()->uuid(),
+                    'rachelId' => $rachelId, // for Addwin Customer Service
                     'sender' => $user->name
                 ];
                 $headers = ['Content-Type' => 'application/json', 'Accept' => 'application/json'];
@@ -111,7 +125,6 @@ class GenerateDraftCommand extends Command
                 $this->info("* Created draft in message ID: {$message['id']} for User: {$user->email}");
                 Log::info("* Created draft in message ID: {$message['id']} for User: {$user->email}");
             }
-
         } catch (\Exception $e) {
             $this->error("Process failed for User: {$user->email}");
             Log::error("Error processing User: {$user->email}: " . $e->getMessage());
