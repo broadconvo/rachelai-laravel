@@ -84,6 +84,10 @@ class KnowledgebaseController extends Controller
 
         $knowledgebase = Knowledgebase::whereKbId($knowledgebaseId)->first();
 
+        $knowledgebase->update([
+            'kb_label' => request('label') ?? $knowledgebase->kb_label,
+        ]);
+
         if(!$knowledgebase)
             abort(404, 'Knowledgebase not found');
 
