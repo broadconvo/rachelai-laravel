@@ -200,7 +200,7 @@ class GmailService
                 [
                     'access_token' => $newToken['access_token'],
                     'refresh_token' => $newToken['refresh_token'],
-                    'expires_in' => $newToken['expires_in'], // 1hr in seconds
+                    'expires_in' => 3600, // 1hr in seconds
                 ]
             );
             Log::info('Successfully refreshed the token');
