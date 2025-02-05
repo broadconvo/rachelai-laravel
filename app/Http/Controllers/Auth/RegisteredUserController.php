@@ -3,20 +3,17 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
-use App\Models\Broadconvo\PhoneExtension;
 use App\Models\Broadconvo\UserAgent;
 use App\Models\Broadconvo\UserMaster;
 use App\Models\User;
-use App\Rules\PhoneExtensionExists;
+use App\Rules\TenantPhoneExtensionExists;
 use App\Rules\PhoneExtensionNotUsed;
-use App\Rules\PhoneExtensionUnique;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules;
 
 class RegisteredUserController extends Controller
@@ -38,7 +35,7 @@ class RegisteredUserController extends Controller
             'tenant_id' => ['required', 'string', 'max:255'],
             'extension_number' => [
                 'required', 'string', 'max:255',
-                new PhoneExtensionExists($request->tenant_id),
+                new TenantPhoneExtensionExists($request->tenant_id),
                 new PhoneExtensionNotUsed()
             ],
             'picture_url' => ['url', 'string'],

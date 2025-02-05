@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Broadconvo;
 use App\Http\Controllers\Controller;
 use App\Models\Broadconvo\PhoneExtension;
 use App\Models\Broadconvo\UserAgent;
-use App\Rules\PhoneExtensionExists;
+use App\Rules\TenantPhoneExtensionExists;
 
 class PhoneExtensionController extends Controller
 {

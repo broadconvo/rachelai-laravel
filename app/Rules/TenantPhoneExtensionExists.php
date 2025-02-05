@@ -6,7 +6,7 @@ use App\Models\Broadconvo\PhoneExtension;
 use Closure;
 use Illuminate\Contracts\Validation\ValidationRule;
 
-class PhoneExtensionExists implements ValidationRule
+class TenantPhoneExtensionExists implements ValidationRule
 {
     protected string $tenantId;
 
@@ -27,7 +27,7 @@ class PhoneExtensionExists implements ValidationRule
             ->exists();
 
         if (!$exists) {
-            $fail("The {$attribute} does not exist.");
+            $fail("The phone extension does not exist in tenant #$this->tenantId.");
         }
     }
 }
