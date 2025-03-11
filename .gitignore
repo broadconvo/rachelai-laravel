@@ -20,3 +20,4 @@ Homestead.json
 .idea
 .vscode
 .DS_Store
+ecosystem.config.js
