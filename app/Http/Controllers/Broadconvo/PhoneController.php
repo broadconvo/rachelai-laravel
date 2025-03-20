@@ -39,4 +39,17 @@ class PhoneController extends Controller
             'data' => $phone
         ]);
     }
+
+    public function getRachel($phone)
+    {
+        $phone = TenantPhone::where('did_number', $phone)->firstOrFail();
+
+        return response()->json([
+            'message' => 'Successfully retrieved rachel_id for phone number',
+            'data' => [
+                'rachel_id' => $phone->rachel_id,
+                'tenant_id' => $phone->tenant_id
+            ]
+        ]);
+    }
 }

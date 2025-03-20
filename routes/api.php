@@ -45,6 +45,7 @@ Route::post('/github/webhook', [GithubController::class, 'handle'])->middleware(
 Route::prefix('broadconvo')->group(function() {
     Route::get('agents', [BroadconvoUserController::class, 'index']);
 
+    Route::get('phones/{phone}', [PhoneController::class, 'getRachel']);
     Route::put('phones', [PhoneController::class, 'upsert']);
 
     Route::post('phone-extensions', [PhoneExtensionController::class, 'create']);
